@@ -23,6 +23,4 @@
 
 -A INPUT -j REJECT
 
--A OUTPUT -p icmpv6 --icmpv6-type time-exceeded -j DROP
-
 COMMIT
