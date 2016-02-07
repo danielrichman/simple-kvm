@@ -3,7 +3,6 @@ set -o errexit -o nounset -o pipefail
 
 chown -R root:root for-target-etc
 chmod -R 644 for-target-etc
-cp /for-target-etc/ntp.conf /target/etc/ntp.conf
 cp -R /for-target-etc/iptables /target/etc/iptables
 
 mkdir /target/root/.ssh
