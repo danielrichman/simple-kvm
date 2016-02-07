@@ -11,10 +11,15 @@ chmod 700 /target/root/.ssh
 cp /.ssh/authorized_keys /target/root/.ssh/
 chmod 600 /target/root/.ssh/authorized_keys
 
+mkdir /target/usr/local/lib/simple-kvm
+# It will be root:staff g+s by default
+chown root:root /target/usr/local/lib/simple-kvm
+chmod 755 /target/usr/local/lib/simple-kvm
+
 in-target git clone https://github.com/danielrichman/simple-kvm /usr/local/lib/simple-kvm
 cp /target/usr/local/lib/simple-kvm/example-config.json /target/etc/guests.json
 cp /target/usr/local/lib/simple-kvm/sysctl.conf         /target/etc/sysctl.conf
 ln -s /usr/local/lib/simple-kvm/guest-manager /target/usr/local/bin
 ln -s /usr/local/lib/simple-kvm/random-mac    /target/usr/local/bin
 
-# TODO exim
+# TODO exim, raid monitoring
