@@ -1,0 +1,4 @@
+#!/usr/bin/python3
+from random import randint
+mac = [ 0x02, 0x00, 0x00, randint(0x00, 0x7f), randint(0x00, 0xff), randint(0x00, 0xff) ]
+print(":".join("{:02x}".format(x) for x in mac))

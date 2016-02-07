@@ -1,0 +1,6 @@
+#!/bin/sh
+
+rm /var/lib/dpkg/info/partman-base.postinst
+touch /var/lib/dpkg/info/partman-base.postinst
+chmod +x /var/lib/dpkg/info/partman-base.postinst
+exec /manual-partition

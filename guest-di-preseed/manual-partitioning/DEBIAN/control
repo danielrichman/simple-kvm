@@ -1,0 +1,8 @@
+Package: manual-partitioning
+Version: 1
+Architecture: all
+Installer-Menu-Item: 4100
+Maintainer: Daniel Richman <main@danielrichman.co.uk>
+Section: debian-installer
+Priority: standard
+Description: manual-partitioning
