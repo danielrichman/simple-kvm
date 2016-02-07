@@ -25,9 +25,13 @@ To create a new guest
  - `vim /etc/guests.json`: change the kernel, initrd to their final values
     - to direct boot the kernel from the host, use `/vmlinux` `/initrd.img` `console=ttyS0,115200n8 root=/dev/vda`
     - to use grub omit the three options (and change the preseed to install grub)
+ - `cp /usr/local/lib/simple-kvm/guest-example.service /etc/systemd/system/guest-daniel-yocto.service`
+ - `vim /etc/systemd/system/guest-daniel-yocto.service` and find-replace the name
 
 Todo
 ----
 
  - exim setup
  - RAID monitoring (depends on exim)
+ - can we use systemd templated services instead of multiple services?
+ - Add a helper to guest-manager to do installs. Pass the v4 and v6 on the kernel command line so that the initrd can be reused.
