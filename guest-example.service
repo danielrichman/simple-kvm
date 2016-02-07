@@ -1,0 +1,12 @@
+[Unit]
+Description=Guest: daniel-yocto
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/guest-manager daniel-yocto boot
+ExecStop=/usr/local/bin/guest-manager daniel-yocto acpi-shutdown
+KillMode=none
+Restart=no
+
+[Install]
+WantedBy=multi-user.target
