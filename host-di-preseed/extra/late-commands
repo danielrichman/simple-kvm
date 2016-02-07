@@ -11,8 +11,8 @@ cp /.ssh/authorized_keys /target/root/.ssh/
 chmod 600 /target/root/.ssh/authorized_keys
 
 in-target git clone https://github.com/danielrichman/simple-kvm /usr/local/lib/simple-kvm
-cp /target/usr/local/lib/example-config.json /target/etc/guests.json
-cp /target/usr/local/lib/sysctl.conf         /target/etc/sysctl.conf
+cp /target/usr/local/lib/simple-kvm/example-config.json /target/etc/guests.json
+cp /target/usr/local/lib/simple-kvm/sysctl.conf         /target/etc/sysctl.conf
 ln -s /usr/local/lib/simple-kvm/guest-manager /target/usr/local/bin
 ln -s /usr/local/lib/simple-kvm/random-mac    /target/usr/local/bin
 
