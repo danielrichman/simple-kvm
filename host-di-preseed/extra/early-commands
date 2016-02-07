@@ -21,6 +21,8 @@ ip route add default via MMMM:MMMM:MMMM:MMff:ff:ff:ff:ff
 cat > /etc/resolv.conf <<EOF
 nameserver 8.8.8.8
 nameserver 8.8.4.4
+nameserver 2001:4860:4860::8888
+nameserver 2001:4860:4860::8844
 EOF
 echo untitled-host > /etc/hostname
 hostname -F /etc/hostname
