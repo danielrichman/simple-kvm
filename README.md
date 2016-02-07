@@ -19,3 +19,12 @@ To create a new guest
  - `vim extra/early-commands`
     - set IP4, IP6, HOSTNAME
     - HOST4 should be the IPV4 of the host, not the guest.
+ - `./build.sh`
+ - `guest-manager daniel-yocto boot`
+    - let it do its thing, takes a minute or two
+
+Todo
+----
+
+ - exim setup
+ - RAID monitoring (depends on exim)
