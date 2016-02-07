@@ -8,8 +8,7 @@ requirements.
 To create a new guest
 ---------------------
 
- - `vim /etc/guests.json`
- - add the VM, but set
+ - `vim /etc/guests.json`: add the VM, but set
     - kernel: `/usr/lib/debian-installer/images/8/amd64/text/debian-installer/amd64/linux`
     - initrd: `/usr/local/lib/simple-kvm/guest-di-preseed/initrd.gz`
     - append: `console=ttyS0,115200n8`
@@ -21,7 +20,11 @@ To create a new guest
     - HOST4 should be the IPV4 of the host, not the guest.
  - `./build.sh`
  - `guest-manager daniel-yocto boot`
-    - let it do its thing, takes a minute or two
+    - let it do its thing, takes about 5mins
+    - you can use `guest-manager daniel-yocto console` to watch
+ - `vim /etc/guests.json`: change the kernel, initrd to their final values
+    - to direct boot the kernel from the host, use `/vmlinux` `/initrd.img` `console=ttyS0,115200n8 root=/dev/vda`
+    - to use grub omit the three options (and change the preseed to install grub)
 
 Todo
 ----
