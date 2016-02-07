@@ -27,6 +27,8 @@ To create a new guest
     - to use grub omit the three options (and change the preseed to install grub)
  - `cp /usr/local/lib/simple-kvm/guest-example.service /etc/systemd/system/guest-daniel-yocto.service`
  - `vim /etc/systemd/system/guest-daniel-yocto.service` and find-replace the name
+ - `systemctl enable guest-daniel-yocto.service`
+ - `systemctl start guest-daniel-yocto.service`
 
 Todo
 ----
