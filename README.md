@@ -23,7 +23,7 @@ To create a new guest
     - let it do its thing, takes about 5mins
     - you can use `guest-manager daniel-yocto console` to watch
  - `vim /etc/guests.json`: change the kernel, initrd to their final values
-    - to direct boot the kernel from the host, use `/vmlinux` `/initrd.img` `console=ttyS0,115200n8 root=/dev/vda`
+    - to direct boot the kernel from the host, use `/vmlinuz` `/initrd.img` `console=ttyS0,115200n8 root=/dev/vda`
     - to use grub omit the three options (and change the preseed to install grub)
  - `cp /usr/local/lib/simple-kvm/guest-example.service /etc/systemd/system/guest-daniel-yocto.service`
  - `vim /etc/systemd/system/guest-daniel-yocto.service` and find-replace the name
