@@ -4,16 +4,9 @@ set -o errexit -o nounset -o pipefail
 exec > /var/log/late-commands-stdout
 exec 2> /var/log/late-commands-stderr
 
-chown -R root:root /for-target-etc
-chmod -R 644 /for-target-etc
-cp /for-target-etc/apt.conf.d/20auto-upgrades /for-target-etc/apt.conf.d/50unattended-upgrades /target/etc/apt/apt.conf.d
-mkdir -p /target/etc/iptables
-cp /for-target-etc/iptables/rules.v4 /for-target-etc/iptables/rules.v6 /target/etc/iptables
-
-mkdir /target/root/.ssh
-chmod 700 /target/root/.ssh
-cp /authorized_keys /target/root/.ssh/authorized_keys
-chmod 600 /target/root/.ssh/authorized_keys
+chown -R root:root /preseed-files
+chmod -R 644 /preseed-files
+cp /preseed-files/apt.conf.d/20auto-upgrades /preseed-files/apt.conf.d/50unattended-upgrades /target/etc/apt/apt.conf.d
 
 chroot /target /bin/systemctl disable getty@tty1.service console-setup.service
 
