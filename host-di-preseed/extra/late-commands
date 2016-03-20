@@ -4,9 +4,10 @@ set -o errexit -o nounset -o pipefail
 exec > /var/log/late-commands-stdout
 exec 2> /var/log/late-commands-stderr
 
-chown -R root:root for-target-etc
-chmod -R 644 for-target-etc
+chown -R root:root /for-target-etc
+chmod -R 644 /for-target-etc
 cp /for-target-etc/ntp.conf /target/etc/ntp.conf
+cp /for-target-etc/apt.conf.d/20auto-upgrades /for-target-etc/apt.conf.d/50unattended-upgrades /target/etc/apt/apt.conf.d
 mkdir -p /target/etc/iptables
 cp /for-target-etc/iptables/rules.v4 /for-target-etc/iptables/rules.v6 /target/etc/iptables
 
