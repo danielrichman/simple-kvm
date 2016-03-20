@@ -15,3 +15,5 @@ cp /authorized_keys /target/root/.ssh/authorized_keys
 chmod 600 /target/root/.ssh/authorized_keys
 
 chroot /target /bin/systemctl disable getty@tty1.service console-setup.service
+
+test -f /late-commands2 && /late-commands2

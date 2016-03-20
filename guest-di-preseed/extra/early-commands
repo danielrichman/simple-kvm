@@ -6,10 +6,8 @@ export PATH=/usr/sbin:/usr/bin:/sbin:/bin
 exec > /var/log/early-commands-stdout
 exec 2> /var/log/early-commands-stderr
 
-IP4=GG.GG.GG.GG
-IP6=MMMM:MMMM:MMMM:MMMM::1
-HOST4=NNN.NNN.NNN.NNN
-HOSTNAME=daniel-test
+source /early-commands-settings
+echo "early-commands: IP4=$IP4, IP6=$IP6, HOST4=$HOST4, HOSTNAME=$HOSTNAME"
 
 ip link set eth0 up
 ip addr add $IP4 dev eth0
