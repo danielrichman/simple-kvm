@@ -10,4 +10,4 @@ cp /preseed-files/apt.conf.d/20auto-upgrades /preseed-files/apt.conf.d/50unatten
 
 chroot /target /bin/systemctl disable getty@tty1.service console-setup.service
 
-test -f /late-commands2 && /late-commands2
+if [ -f /late-commands2 ]; then /late-commands2; fi

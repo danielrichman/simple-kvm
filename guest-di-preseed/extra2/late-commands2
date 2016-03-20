@@ -15,4 +15,4 @@ chmod 700 /target/root/.ssh
 cp /preseed-files2/authorized_keys /target/root/.ssh/authorized_keys
 chmod 600 /target/root/.ssh/authorized_keys
 
-test -f /late-commands3 && /late-commands3
+if [ -f /late-commands3 ]; then /late-commands3; fi
