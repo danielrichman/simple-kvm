@@ -1,12 +1,5 @@
-// Don't forget to update apt_cache to_archive_mirrors acl!
-// o=root is for rsyslog's debian.adiscon.com, sigh.
 Unattended-Upgrade::Origins-Pattern {
-        "o=Debian";
-        "o=saltstack.com";
-        "o=nginx";
-        "o=apt.postgresql.org";
-        "o=root";
-        "o=Elasticsearch";
+    "o=Debian";
 };
 
 Unattended-Upgrade::Mail "root";
