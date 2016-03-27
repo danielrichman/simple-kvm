@@ -11,7 +11,7 @@ chmod 644 /preseed-lib/exim4.conf
 cp /preseed-lib/exim4.conf /target/etc/exim4/exim4.conf
 
 . /preseed-settings
-cat > /etc/exim4/hostnames.conf <<EOF
+cat > /target/etc/exim4/hostnames.conf <<EOF
 HOSTNAME=$HOSTNAME
 FQDN=$FQDN
 EOF
