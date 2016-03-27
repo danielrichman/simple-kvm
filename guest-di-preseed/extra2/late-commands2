@@ -15,4 +15,18 @@ chmod 700 /target/root/.ssh
 cp /preseed-files2/authorized_keys /target/root/.ssh/authorized_keys
 chmod 600 /target/root/.ssh/authorized_keys
 
+in-target apt-get install -f exim4-daemon-light
+rm -f /target/etc/exim4/exim4.conf.template
+rm -f /target/etc/exim4/passwd.client
+rm -rf /target/etc/exim4/conf.d
+cp /preseed-files2/exim4.conf /target/etc/exim4/exim4.conf
+
+in-target openssl genrsa -out /etc/exim4/dkim.key 2048
+in-target chown root:Debian-exim /etc/exim4/dkim.key
+chmod 640 /target/etc/exim4/dkim.key
+in-target openssl rsa \
+    -in /etc/exim4/dkim.key \
+    -out /etc/exim4/dkim.public.key \
+    -pubout -outform PEM
+
 if [ -f /late-commands3 ]; then /late-commands3; fi
