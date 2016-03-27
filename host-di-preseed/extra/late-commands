@@ -9,6 +9,10 @@ exec 2> /var/log/late-commands-stderr
 /preseed-lib/splat-sshd-config
 /preseed-lib/exim4
 
+cat > /target/etc/aliases <<EOF
+*: dev-null@localhost.localdomain
+EOF
+
 cat > /target/etc/ntp.conf <<EOF
 driftfile /var/lib/ntp/ntp.drift
 

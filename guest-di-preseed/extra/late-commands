@@ -14,3 +14,7 @@ chmod 700 /target/root/.ssh
 cat > /target/root/.ssh/authorized_keys <<EOF
 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDEM8m45WyRRazHHATjqq6QjATRppZoVNJ+T3cQIIqDjKzv4FYYFl/6Ho4mheaEZnHhtpqdRj8za5Pb1CgjnQi/L8yCo5vnycjQacwbOqVQP/ulG6em1muCyT9ghjftrKCxVeU+smi6Z+CbTd/5b/ZnH2dDdfKPi8yHg0TkJlul/+4gMrUe76GtSepavY9WBRRUXEc+epIqV4L0WCmtFULmeRStZBz/VkxfBS8zH2fDj0H5HwRa+tHm34kyggY5+YRYi0M4/vI82ZlmTtD52zkr0yng8bc+3yBkTPwlHKTwYoZPgV9sf5m0ilmO9uqCf7X28kohFC3J77ctjxRP1NiT daniel@deka
 EOF
+
+cat > /target/etc/aliases <<EOF
+*: dev-null@localhost.localdomain
+EOF
