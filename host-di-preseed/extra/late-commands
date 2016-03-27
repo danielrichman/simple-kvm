@@ -4,12 +4,30 @@ set -o errexit -o nounset -o pipefail
 exec > /var/log/late-commands-stdout
 exec 2> /var/log/late-commands-stderr
 
-chown -R root:root /for-target-etc
-chmod -R 644 /for-target-etc
-cp /for-target-etc/ntp.conf /target/etc/ntp.conf
-cp /for-target-etc/apt.conf.d/20auto-upgrades /for-target-etc/apt.conf.d/50unattended-upgrades /target/etc/apt/apt.conf.d
-mkdir -p /target/etc/iptables
-cp /for-target-etc/iptables/rules.v4 /for-target-etc/iptables/rules.v6 /target/etc/iptables
+/preseed-lib/unattended-upgrades
+/preseed-lib/iptables-ssh-only
+/preseed-lib/splat-sshd-config
+/preseed-lib/exim4
+
+cat > /target/etc/ntp.conf <<EOF
+driftfile /var/lib/ntp/ntp.drift
+
+statistics loopstats peerstats clockstats
+filegen loopstats file loopstats type day enable
+filegen peerstats file peerstats type day enable
+filegen clockstats file clockstats type day enable
+
+server ntp.ovh.net
+
+restrict -4 kod notrap nomodify nopeer noquery
+restrict -6 kod notrap nomodify nopeer noquery
+
+restrict 127.0.0.1 notrap nomodify nopeer
+restrict ::1       notrap nomodify nopeer
+EOF
+
+chown root:root /target/etc/ntp.conf
+chmod 644 /target/etc/ntp.conf
 
 mkdir /target/root/.ssh
 chmod 700 /target/root/.ssh
@@ -27,4 +45,4 @@ cp /target/usr/local/lib/simple-kvm/sysctl.conf         /target/etc/sysctl.conf
 ln -s /usr/local/lib/simple-kvm/guest-manager /target/usr/local/bin
 ln -s /usr/local/lib/simple-kvm/random-mac    /target/usr/local/bin
 
-# TODO exim, raid monitoring
+# raid monitoring
