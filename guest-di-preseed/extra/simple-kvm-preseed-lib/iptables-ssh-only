@@ -1,3 +1,28 @@
+#!/bin/sh
+set -o errexit -o nounset -o pipefail
+
+mkdir -p /target/etc/iptables
+cat > /target/etc/iptables/rules.v4 <<EOF
+*filter
+
+-P INPUT DROP
+-P FORWARD ACCEPT
+-P OUTPUT ACCEPT
+
+-A INPUT -i lo -j ACCEPT
+-A INPUT ! -i lo -s 127.0.0.0/8 -j DROP
+-A INPUT ! -i lo -d 127.0.0.0/8 -j DROP
+
+-A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+-A INPUT -p icmp --icmp-type echo-request -j ACCEPT 
+-A INPUT -p tcp --dport 22 -m state --state NEW -j ACCEPT
+
+-A INPUT -j REJECT
+
+COMMIT
+EOF
+
+cat > /target/etc/iptables/rules.v6 <<EOF
 *filter
 
 -P INPUT DROP
@@ -24,3 +49,7 @@
 -A INPUT -j REJECT
 
 COMMIT
+EOF
+
+chmod 644 /target/etc/iptables/rules.v4 /target/etc/iptables/rules.v6
+chown root:root /target/etc/iptables/rules.v4 /target/etc/iptables/rules.v6

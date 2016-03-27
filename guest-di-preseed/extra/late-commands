@@ -4,10 +4,8 @@ set -o errexit -o nounset -o pipefail
 exec > /var/log/late-commands-stdout
 exec 2> /var/log/late-commands-stderr
 
-chown -R root:root /preseed-files
-chmod -R 644 /preseed-files
-cp /preseed-files/apt.conf.d/20auto-upgrades /preseed-files/apt.conf.d/50unattended-upgrades /target/etc/apt/apt.conf.d
-
-chroot /target /bin/systemctl disable getty@tty1.service console-setup.service
-
-if [ -f /late-commands2 ]; then /late-commands2; fi
+/simple-kvm-preseed-lib/iptables-ssh-only
+/simple-kvm-preseed-lib/serial-console-only
+/simple-kvm-preseed-lib/unattended-upgrades
+/examples/root-authorized-keys
+/simple-kvm-preseed-lib/exim4
