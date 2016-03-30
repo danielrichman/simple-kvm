@@ -23,7 +23,7 @@ cat > /target/tmp/rules.v4 <<EOF
 COMMIT
 EOF
 
-in-target install -o root -g root -m 644 /tmp/ruels.v4 /etc/iptables/rules.v4
+in-target install -o root -g root -m 644 /tmp/rules.v4 /etc/iptables/rules.v4
 
 cat > /target/tmp/rules.v6 <<EOF
 *filter
@@ -54,4 +54,4 @@ cat > /target/tmp/rules.v6 <<EOF
 COMMIT
 EOF
 
-in-target install -o root -g root -m 644 /tmp/ruels.v6 /etc/iptables/rules.v6
+in-target install -o root -g root -m 644 /tmp/rules.v6 /etc/iptables/rules.v6
