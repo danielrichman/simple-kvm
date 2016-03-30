@@ -34,7 +34,6 @@ To create a new guest
 Todo
 ----
 
- - exim setup
- - RAID monitoring (depends on exim)
+ - RAID monitoring
  - can we use systemd templated services instead of multiple services?
  - Add a helper to guest-manager to do installs. Pass the v4 and v6 on the kernel command line so that the initrd can be reused.
