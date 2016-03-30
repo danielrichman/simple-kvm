@@ -9,11 +9,11 @@ exec 2> /var/log/late-commands-stderr
 /preseed-lib/splat-sshd-config
 /preseed-lib/exim4
 
-cat > /target/etc/aliases <<EOF
+cat > /target/tmp/aliases <<EOF
 *: dev-null@localhost.localdomain
 EOF
 
-cat > /target/etc/ntp.conf <<EOF
+cat > /target/tmp/ntp.conf <<EOF
 driftfile /var/lib/ntp/ntp.drift
 
 statistics loopstats peerstats clockstats
@@ -30,11 +30,13 @@ restrict 127.0.0.1 notrap nomodify nopeer
 restrict ::1       notrap nomodify nopeer
 EOF
 
-chown root:root /target/etc/ntp.conf
-chmod 644 /target/etc/ntp.conf
+in-target install -o root -g root -m 644 /tmp/aliases /etc/aliases
+in-target install -o root -g root -m 644 /tmp/ntp.conf /etc/ntp.conf
 
 mkdir -m 700 /target/root/.ssh
-install -o root -g root -m 644 /.ssh/authorized_keys /target/root/.ssh/
+cp /.ssh/authorized_keys /target/tmp/root-authorized-keys
+in-target install -o root -g root -m 644 /tmp/root-authorized-keys /root/.ssh/
+rm /target/tmp/root-authorized-keys
 
 mkdir /target/usr/local/lib/simple-kvm
 # It will be root:staff g+s by default

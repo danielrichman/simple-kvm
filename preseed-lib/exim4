@@ -6,7 +6,8 @@ rm -f /target/etc/exim4/exim4.conf.template
 rm -f /target/etc/exim4/passwd.client
 rm -rf /target/etc/exim4/conf.d
 
-install -o root -g root -m 644 /preseed-lib/exim4.conf /target/etc/exim4/exim4.conf
+cp /preseed-lib/exim4.conf /target/tmp/exim4.conf
+in-target install -o root -g root -m 644  /tmp/exim4.conf /etc/exim4/exim4.conf
 
 . /preseed-settings
 cat > /target/etc/exim4/hostnames.conf <<EOF
