@@ -34,9 +34,9 @@ in-target install -o root -g root -m 644 /tmp/aliases /etc/aliases
 in-target install -o root -g root -m 644 /tmp/ntp.conf /etc/ntp.conf
 
 mkdir -m 700 /target/root/.ssh
-cp /.ssh/authorized_keys /target/tmp/root-authorized-keys
-in-target install -o root -g root -m 644 /tmp/root-authorized-keys /root/.ssh/
-rm /target/tmp/root-authorized-keys
+cp /.ssh/authorized_keys /target/tmp/root-authorized_keys
+in-target install -o root -g root -m 644 /tmp/root-authorized_keys /root/.ssh/authorized_keys
+rm /target/tmp/root-authorized_keys
 
 mkdir /target/usr/local/lib/simple-kvm
 # It will be root:staff g+s by default
