@@ -33,10 +33,8 @@ EOF
 chown root:root /target/etc/ntp.conf
 chmod 644 /target/etc/ntp.conf
 
-mkdir /target/root/.ssh
-chmod 700 /target/root/.ssh
-cp /.ssh/authorized_keys /target/root/.ssh/
-chmod 600 /target/root/.ssh/authorized_keys
+mkdir -m 700 /target/root/.ssh
+install -o root -g root -m 644 /.ssh/authorized_keys /target/root/.ssh/
 
 mkdir /target/usr/local/lib/simple-kvm
 # It will be root:staff g+s by default
