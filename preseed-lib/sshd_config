@@ -18,7 +18,7 @@ LoginGraceTime 120
 PermitRootLogin without-password
 StrictModes yes
 
-AllowGroups users
+AllowGroups root users
 
 PubkeyAuthentication yes
 

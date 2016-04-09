@@ -7,6 +7,7 @@ exec 2> /var/log/late-commands-stderr
 /preseed-lib/iptables-ssh-only
 /preseed-lib/serial-console-only
 /preseed-lib/unattended-upgrades
+/preseed-lib/splat-sshd-config
 /preseed-lib/exim4
 
 mkdir -m 700 /target/root/.ssh
