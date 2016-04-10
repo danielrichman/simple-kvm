@@ -15,7 +15,7 @@ cat > /target/tmp/rules.v4 <<EOF
 -A INPUT ! -i lo -d 127.0.0.0/8 -j DROP
 
 -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
--A INPUT -p icmp --icmp-type echo-request -j ACCEPT 
+-A INPUT -p icmp --icmp-type echo-request -j ACCEPT
 -A INPUT -p tcp --dport 22 -m state --state NEW -j ACCEPT
 
 -A INPUT -j REJECT
@@ -36,8 +36,8 @@ cat > /target/tmp/rules.v6 <<EOF
 -A INPUT ! -i lo -s ::1 -j DROP
 -A INPUT ! -i lo -d ::1 -j DROP
 
--A INPUT -p icmpv6 --icmpv6-type echo-request -j ACCEPT 
--A INPUT -p icmpv6 --icmpv6-type echo-reply -j ACCEPT 
+-A INPUT -p icmpv6 --icmpv6-type echo-request -j ACCEPT
+-A INPUT -p icmpv6 --icmpv6-type echo-reply -j ACCEPT
 -A INPUT -p icmpv6 --icmpv6-type destination-unreachable -j ACCEPT
 -A INPUT -p icmpv6 --icmpv6-type packet-too-big -j ACCEPT
 -A INPUT -p icmpv6 --icmpv6-type time-exceeded -j ACCEPT
