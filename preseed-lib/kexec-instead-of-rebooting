@@ -1,0 +1,20 @@
+#!/bin/sh
+set -o errexit -o nounset
+
+anna-install kexec-tools-udeb
+
+# At the time of writing, you get this in /target:
+#   initrd.img -> /boot/initrd.img-3.16.0-4-amd64
+# so we need this hack to interpret the symlinks relative to the chroot.
+
+in-target cp --dereference /vmlinuz /initrd.img /tmp
+
+kexec -l /target/tmp/vmlinuz --initrd=/target/tmp/initrd.img \
+    --append="console=ttyS0,115200n8 root=/dev/vda"
+
+rm /target/tmp/vmlinuz /target/tmp/initrd.img
+
+cat > /lib/debian-installer/exit <<EOF
+#!/bin/sh
+kexec -e
+EOF
