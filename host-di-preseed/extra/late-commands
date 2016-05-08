@@ -8,10 +8,37 @@ exec 2> /var/log/late-commands-stderr
 /preseed-lib/splat-sshd-config
 /preseed-lib/exim4
 
-/preseed-lib/iptables-ssh-only
+mkdir -m 755 -p /target/etc/iptables
 
-# Allow NTP from guests
-in-target sed -i -e '/EXTRA V4 RULES/a -A INPUT ! -i eth0 -p udp --dport 123 -j ACCEPT' /etc/iptables/rules.v4
+cat > /target/tmp/rules.v4 <<EOF
+*filter
+
+`cat /preseed-lib/iptables-rules.v4-common`
+
+-A INPUT ! -i eth0 -p udp --dport 123 -j ACCEPT
+
+-A INPUT -j REJECT
+
+-A OUTPUT -p icmp --icmp-type time-exceeded -j DROP
+
+COMMIT
+EOF
+
+in-target install -o root -g root -m 644 /tmp/rules.v4 /etc/iptables/rules.v4
+
+cat > /target/tmp/rules.v6 <<EOF
+*filter
+
+`cat /preseed-lib/iptables-rules.v6-common`
+
+-A INPUT -j REJECT
+
+-A OUTPUT -p icmpv6 --icmpv6-type time-exceeded -j DROP
+
+COMMIT
+EOF
+
+in-target install -o root -g root -m 644 /tmp/rules.v6 /etc/iptables/rules.v6
 
 cat > /target/tmp/aliases <<EOF
 *: dev-null@localhost.localdomain
