@@ -18,6 +18,8 @@ cat > /target/tmp/rules.v4 <<EOF
 -A INPUT -p icmp --icmp-type echo-request -j ACCEPT
 -A INPUT -p tcp --dport 22 -m state --state NEW -j ACCEPT
 
+# EXTRA V4 RULES
+
 -A INPUT -j REJECT
 
 COMMIT
@@ -48,6 +50,8 @@ cat > /target/tmp/rules.v6 <<EOF
 
 -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 -A INPUT -p tcp --dport 22 -m state --state NEW -j ACCEPT
+
+# EXTRA V6 RULES
 
 -A INPUT -j REJECT
 

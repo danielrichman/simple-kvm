@@ -5,13 +5,19 @@ exec > /var/log/late-commands-stdout
 exec 2> /var/log/late-commands-stderr
 
 /preseed-lib/unattended-upgrades
-/preseed-lib/iptables-ssh-only
 /preseed-lib/splat-sshd-config
 /preseed-lib/exim4
+
+/preseed-lib/iptables-ssh-only
+
+# Allow NTP from guests
+in-target sed -i -e '/EXTRA V4 RULES/a -A INPUT ! -i eth0 -p udp --dport 123 -j ACCEPT' /etc/iptables/rules.v4
 
 cat > /target/tmp/aliases <<EOF
 *: dev-null@localhost.localdomain
 EOF
+
+in-target install -o root -g root -m 644 /tmp/aliases /etc/aliases
 
 cat > /target/tmp/ntp.conf <<EOF
 driftfile /var/lib/ntp/ntp.drift
@@ -30,7 +36,6 @@ restrict 127.0.0.1 notrap nomodify nopeer
 restrict ::1       notrap nomodify nopeer
 EOF
 
-in-target install -o root -g root -m 644 /tmp/aliases /etc/aliases
 in-target install -o root -g root -m 644 /tmp/ntp.conf /etc/ntp.conf
 
 mkdir -m 700 /target/root/.ssh

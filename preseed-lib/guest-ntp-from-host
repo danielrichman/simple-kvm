@@ -1,0 +1,23 @@
+#!/bin/sh
+set -o errexit -o nounset
+ 
+. /preseed-settings
+
+cat > /target/tmp/ntp.conf <<EOF
+driftfile /var/lib/ntp/ntp.drift
+
+statistics loopstats peerstats clockstats
+filegen loopstats file loopstats type day enable
+filegen peerstats file peerstats type day enable
+filegen clockstats file clockstats type day enable
+
+server $HOST4
+
+restrict -4 default kod notrap nomodify nopeer noquery
+restrict -6 default kod notrap nomodify nopeer noquery
+
+restrict 127.0.0.1 notrap nomodify nopeer
+restrict ::1       notrap nomodify nopeer
+EOF
+
+in-target install -o root -g root -m 644 /tmp/ntp.conf /etc/ntp.conf
