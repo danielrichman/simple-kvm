@@ -1,6 +1,0 @@
-Unattended-Upgrade::Origins-Pattern {
-    "o=Debian";
-};
-
-Unattended-Upgrade::Mail "root";
-Unattended-Upgrade::MailOnlyOnError "true";
