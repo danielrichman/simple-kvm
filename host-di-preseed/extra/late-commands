@@ -23,8 +23,8 @@ filegen clockstats file clockstats type day enable
 
 server ntp.ovh.net
 
-restrict -4 kod notrap nomodify nopeer noquery
-restrict -6 kod notrap nomodify nopeer noquery
+restrict -4 default kod notrap nomodify nopeer noquery
+restrict -6 default kod notrap nomodify nopeer noquery
 
 restrict 127.0.0.1 notrap nomodify nopeer
 restrict ::1       notrap nomodify nopeer
