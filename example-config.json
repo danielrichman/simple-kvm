@@ -7,7 +7,7 @@
     , "mac": "02:00:00:16:84:c2"
     , "kernel": "/vmlinuz"
     , "initrd": "/initrd.img"
-    , "append": "console=ttyS0,115200n8 root=/dev/vda"
+    , "append": "console=ttyS0,115200n8 root=/dev/vda net.ifnames=0"
     }
 , "debian-installer":
     { "user": "guest-installer"
@@ -18,6 +18,6 @@
     , "mac": "02:00:00:05:6a:2b"
     , "kernel": "/usr/lib/debian-installer/images/9/amd64/text/debian-installer/amd64/linux"
     , "initrd": "/usr/local/lib/simple-kvm/guest-di-preseed/initrd.gz"
-    , "append": "console=ttyS0,115200n8"
+    , "append": "console=ttyS0,115200n8 net.ifnames=0"
     }
 }
