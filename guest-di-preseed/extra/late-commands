@@ -1,5 +1,6 @@
 #!/bin/sh
 set -o errexit -o nounset
+set -x
 
 exec > /var/log/late-commands-stdout
 exec 2> /var/log/late-commands-stderr

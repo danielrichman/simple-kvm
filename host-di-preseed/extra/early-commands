@@ -7,17 +7,18 @@ export PATH=/usr/sbin:/usr/bin:/sbin:/bin
 exec > /var/log/early-commands-stdout
 exec 2> /var/log/early-commands-stderr
 
+. /preseed-settings
+
 chmod 700 .ssh
 chmod 600 .ssh/authorized_keys
 
-
 ip link set eth0 up
-ip addr add NNN.NNN.NNN.NNN/24 broadcast NNN.NNN.NNN.255 dev eth0
-ip route add default via NNN.NNN.NNN.254
+ip addr add $IP4/24 broadcast $IP4_BCAST dev eth0
+ip route add default via $IP4_GATEWAY
 
-ip addr add MMMM:MMMM:MMMM:MMMM:: dev eth0
-ip route add MMMM:MMMM:MMMM:MMff:ff:ff:ff:ff dev eth0
-ip route add default via MMMM:MMMM:MMMM:MMff:ff:ff:ff:ff
+ip addr add $IP6 dev eth0
+ip route add $IP6_GATEWAY dev eth0
+ip route add default via $IP6_GATEWAY
 
 cat > /etc/resolv.conf <<EOF
 nameserver 8.8.8.8
@@ -25,7 +26,7 @@ nameserver 8.8.4.4
 nameserver 2001:4860:4860::8888
 nameserver 2001:4860:4860::8844
 EOF
-echo untitled-host > /etc/hostname
+echo $HOSTNAME > /etc/hostname
 hostname -F /etc/hostname
 
 cat > /etc/network/interfaces <<EOF
@@ -34,19 +35,19 @@ iface lo inet loopback
 
 auto eth0
 iface eth0 inet static
-    address NNN.NNN.NNN.NNN
-    netmask 255.255.255.0
-    network NNN.NNN.NNN.0
-    broadcast NNN.NNN.NNN.255
-    gateway NNN.NNN.NNN.254
+    address $IP4
+    netmask $IP4_NETMASK
+    network $IP4_NETWORK
+    broadcast $IP4_BCAST
+    gateway $IP4_GATEWAY
 
 iface eth0 inet6 static
-    address MMMM:MMMM:MMMM:MMMM::
+    address $IP6
     netmask 128
-    post-up /sbin/ip -family inet6 route add MMMM:MMMM:MMMM:MMff:ff:ff:ff:ff dev eth0
-    post-up /sbin/ip -family inet6 route add default via MMMM:MMMM:MMMM:MMff:ff:ff:ff:ff
-    pre-down /sbin/ip -family inet6 route del default via MMMM:MMMM:MMMM:MMff:ff:ff:ff:ff
-    pre-down /sbin/ip -family inet6 route del MMMM:MMMM:MMMM:MMff:ff:ff:ff:ff dev eth0
+    post-up /sbin/ip -family inet6 route add $IP6_GATEWAY dev eth0
+    post-up /sbin/ip -family inet6 route add default via $IP6_GATEWAY
+    pre-down /sbin/ip -family inet6 route del default via $IP6_GATEWAY
+    pre-down /sbin/ip -family inet6 route del $IP6_GATEWAY dev eth0
 EOF
 
 rm bin/ethdetect bin/netcfg

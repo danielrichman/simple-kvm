@@ -1,7 +1,7 @@
 #!/bin/sh
 set -o errexit -o nounset
 
-in-target apt-get install -f exim4-daemon-light
+in-target apt-get install -y exim4-daemon-light
 rm -f /target/etc/exim4/exim4.conf.template
 rm -f /target/etc/exim4/passwd.client
 rm -rf /target/etc/exim4/conf.d

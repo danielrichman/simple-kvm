@@ -11,11 +11,11 @@ exec 2> /var/log/early-commands-stderr
 echo "early-commands: IP4=$IP4, IP6=$IP6, HOST4=$HOST4, HOSTNAME=$HOSTNAME"
 
 ip link set eth0 up
-ip addr add $IP4 dev eth0
+ip addr add $IP4/32 dev eth0
 ip route add $HOST4 dev eth0
 ip route add default via $HOST4
 
-ip addr add $IP6 dev eth0
+ip addr add $IP6/128 dev eth0
 ip route add fe80::1 dev eth0
 ip route add default via fe80::1 dev eth0
 
