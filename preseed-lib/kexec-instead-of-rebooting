@@ -10,7 +10,7 @@ anna-install kexec-tools-udeb
 in-target cp --dereference /vmlinuz /initrd.img /tmp
 
 kexec -l /target/tmp/vmlinuz --initrd=/target/tmp/initrd.img \
-    --append="console=ttyS0,115200n8 root=/dev/vda"
+    --append="console=ttyS0,115200n8 net.ifnames=0 root=/dev/vda"
 
 rm /target/tmp/vmlinuz /target/tmp/initrd.img
 
