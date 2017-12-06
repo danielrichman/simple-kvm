@@ -15,7 +15,7 @@ To create a new guest
  - `adduser --system --group guest-daniel-yocto --shell /bin/false`
  - `lvcreate vg0 --name daniel-yocto --size 8G`
  - `cd /usr/local/lib/simple-kvm/guest-di-preseed`
- - `vim extra/early-commands-settings`
+ - `vim extra/preseed-settings`
     - set IP4, IP6, HOSTNAME
     - HOST4 should be the IPV4 of the host, not the guest.
  - edit the authorized keys in `extra/late-commands`
