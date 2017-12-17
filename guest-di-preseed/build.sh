@@ -1,7 +1,7 @@
 #!/bin/bash
 set -o errexit -o nounset -o pipefail -o xtrace
 
-(cd ../manual-partitioning; ./build.sh)
+(cd ../manual-partitioning-udeb; ./build.sh)
 
 cp /usr/lib/debian-installer/images/9/amd64/text/debian-installer/amd64/initrd.gz .
 gunzip initrd.gz 
