@@ -49,4 +49,4 @@ rm bin/ethdetect bin/netcfg
 touch bin/ethdetect bin/netcfg
 chmod +x bin/ethdetect bin/netcfg
 
-udpkg -i /manual-partitioning.udeb
+udpkg -i /preseed-lib/manual-partitioning.udeb
