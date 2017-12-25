@@ -3,7 +3,7 @@ set -o errexit -o nounset
 
 export PATH=/usr/sbin:/usr/bin:/sbin:/bin
 
-mkfs.ext4 /dev/vda
+mkfs.ext4 -F /dev/vda
 mkdir /target
 mount -t ext4 /dev/vda /target
 mkdir /target/etc
