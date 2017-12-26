@@ -2,51 +2,6 @@
 set -o errexit -o nounset
 set -x
 
-export PATH=/usr/sbin:/usr/bin:/sbin:/bin
-
-exec > /var/log/early-commands-stdout
-exec 2> /var/log/early-commands-stderr
-
-. /preseed-settings
-echo "early-commands: IP4=$IP4, IP6=$IP6, HOST4=$HOST4, HOSTNAME=$HOSTNAME"
-
-ip link set eth0 up
-ip addr add $IP4/32 dev eth0
-ip route add $HOST4 dev eth0
-ip route add default via $HOST4
-
-ip addr add $IP6/128 dev eth0
-ip route add fe80::1 dev eth0
-ip route add default via fe80::1 dev eth0
-
-cat > /etc/resolv.conf <<EOF
-nameserver 8.8.8.8
-nameserver 8.8.4.4
-nameserver 2001:4860:4860::8888
-nameserver 2001:4860:4860::8844
-EOF
-echo $HOSTNAME > /etc/hostname
-hostname -F /etc/hostname
-
-cat > /etc/network/interfaces <<EOF
-auto lo
-iface lo inet loopback
-
-auto eth0
-iface eth0 inet static
-    address $IP4
-    netmask 255.255.255.255
-    post-up /sbin/ip route add $HOST4 dev eth0
-    post-up /sbin/ip route add default via $HOST4
-
-iface eth0 inet6 static
-    address $IP6
-    netmask 128
-    post-up /sbin/ip -family inet6 route add default via fe80::1 dev eth0
-EOF
-
-rm bin/ethdetect bin/netcfg
-touch bin/ethdetect bin/netcfg
-chmod +x bin/ethdetect bin/netcfg
+/preseed-lib/static-guest-networking
 
 udpkg -i /preseed-lib/manual-partitioning.udeb
