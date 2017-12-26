@@ -3,7 +3,7 @@ set -o errexit -o nounset
 
 . /usr/share/debconf/confmodule
 
-if [ -z ${EARLY_COMMANDS+x} ]; then
+if [ ! -f /var/log/early-commands-is-done ]; then
     # I don't understand why this happens.
     logger -t manual-partitioning "refusing to run during early-commands"
     exit 1;
