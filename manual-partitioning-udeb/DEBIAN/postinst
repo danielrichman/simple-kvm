@@ -3,12 +3,6 @@ set -o errexit -o nounset
 
 . /usr/share/debconf/confmodule
 
-if [ ! -f /var/log/early-commands-is-done ]; then
-    # I don't understand why this happens.
-    logger -t manual-partitioning "refusing to run during early-commands"
-    exit 1;
-fi
-
 logger -t manual-partitioning "disabling partman"
 rm /var/lib/dpkg/info/partman-base.postinst
 touch /var/lib/dpkg/info/partman-base.postinst

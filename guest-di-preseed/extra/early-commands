@@ -4,4 +4,4 @@ set -x
 
 /preseed-lib/static-guest-networking
 
-udpkg -i /preseed-lib/manual-partitioning.udeb
+udpkg --unpack /preseed-lib/manual-partitioning.udeb
