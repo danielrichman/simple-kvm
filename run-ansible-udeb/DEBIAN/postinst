@@ -3,6 +3,13 @@ set -o errexit -o nounset
 
 . /usr/share/debconf/confmodule
 
+# At the time of writing, busybox-ash has a bug where errexit is not 
+# correctly propagated through subshells :-(. This function propagates
+# the failure.
+exit_if_subshell_returned_nonzero () { 
+    RET=$?; [ $RET -eq 0 ] || exit $RET
+}
+
 log() {
     logger -t run-ansible "$@"
 }
@@ -54,10 +61,12 @@ db_progress SET 30
 
 ( unset DEBCONF_OLD_FD_BASE DEBCONF_REDIR DEBIAN_FRONTEND DEBIAN_HAS_FRONTEND
   chroot /ansible-staging apt-get install ansible --no-install-recommends --yes )
+exit_if_subshell_returned_nonzero
 
 ( . /preseed-settings
   echo "${HOSTNAME} ansible_connection=chroot ansible_host=/target" \
       > /ansible-staging/etc/ansible/hosts )
+exit_if_subshell_returned_nonzero
 
 log "running playbook"
 db_progress INFO run-ansible/progress/running-playbook
@@ -65,8 +74,11 @@ db_progress SET 70
 
 ( export HOME=/root # Ansible puts temporary files in ~/.ansible
   chroot /ansible-staging ansible-playbook /ansible-playbooks/main.yml \
-    || ( db_input critical run-ansible/progress/running-ansible-failed || true
-         db_go || true; exit 10 ) )
+    || ( log "ansible failed"
+         db_input critical run-ansible/progress/running-ansible-failed || true
+         db_go || true
+         exit 10 ) )
+exit_if_subshell_returned_nonzero
 
 log "done running playbook"
 
