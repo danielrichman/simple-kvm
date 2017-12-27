@@ -9,7 +9,7 @@ log() {
 
 # Note, this is going to be in-memory, and will consume about 300M
 
-echo "log ansible-at-exit" > /tmp/ansible-at-exit
+echo "log ansible-at-exit; sleep 10" > /tmp/ansible-at-exit
 trap '. /tmp/ansible-at-exit' EXIT
 
 db_progress START 0 100 debian-installer/run-ansible/title
@@ -44,7 +44,7 @@ for i in ansible-playbooks dev dev/shm proc sys target; do
     log "bind-mounting ${i}"
     mkdir -p /ansible-staging/${i}
     mount -o bind /${i} /ansible-staging/${i}
-    echo "umount /ansible-staging/${i}" >> /tmp/ansible-at-exit
+    echo "umount -l /ansible-staging/${i}" >> /tmp/ansible-at-exit
 done
 echo "rm -rf /ansible-staging" >> /tmp/ansible-at-exit
 
@@ -64,6 +64,10 @@ db_progress INFO run-ansible/progress/running-playbook
 db_progress SET 70
 
 ( export HOME=/root # Ansible puts temporary files in ~/.ansible
-  chroot /ansible-staging ansible-playbook /ansible-playbooks/main.yml )
+  chroot /ansible-staging ansible-playbook /ansible-playbooks/main.yml \
+    || ( db_input critical run-ansible/progress/running-ansible-failed || [ $? -eq 30 ]
+         db_go ) )
+
+log "done running playbook"
 
 db_progress STOP
