@@ -1,0 +1,69 @@
+#!/bin/sh
+set -o errexit -o nounset
+
+. /usr/share/debconf/confmodule
+
+log() {
+    logger -t run-ansible "$@"
+}
+
+# Note, this is going to be in-memory, and will consume about 300M
+
+echo "log ansible-at-exit" > /tmp/ansible-at-exit
+trap '. /tmp/ansible-at-exit' EXIT
+
+db_progress START 0 100 run-ansible/progress/title
+
+db_progress INFO run-ansible/progress/preparing-staging
+
+log "mkdir /ansible-staging"
+mkdir /ansible-staging
+
+# The installer doesn't appear to set this up? Python multiprocessing needs it.
+log "mounting /dev/shm"
+if [ ! -d /dev/shm ]; then
+    mkdir /dev/shm
+    mount -t tmpfs tmpfs /dev/shm
+fi
+
+# Share deb download cache.
+log "bindmounting deb cache"
+ARCHS=/var/cache/apt/archives
+mkdir -p /ansible-staging/${ARCHS}
+mount -o bind /target/${ARCHS} /ansible-staging/${ARCHS}
+echo "umount /ansible-staging/${ARCHS}" >> /tmp/ansible-at-exit
+
+log "running debootstrap"
+log-output -t ansible-debootstrap \
+    run-debootstrap \
+        --debian-installer \
+        $(debconf-get mirror/codename) /ansible-staging \
+        http://$(debconf-get mirror/http/hostname)$(debconf-get mirror/http/directory)
+
+for i in ansible-playbooks dev dev/shm proc sys target; do
+    log "bind-mounting ${i}"
+    mkdir -p /ansible-staging/${i}
+    mount -o bind /${i} /ansible-staging/${i}
+    echo "umount /ansible-staging/${i}" >> /tmp/ansible-at-exit
+done
+echo "rm -rf /ansible-staging" >> /tmp/ansible-at-exit
+
+log "installing ansible"
+db_progress INFO run-ansible/progress/installing-ansible
+db_progress SET 30
+
+( unset DEBCONF_OLD_FD_BASE DEBCONF_REDIR DEBIAN_FRONTEND DEBIAN_HAS_FRONTEND
+  chroot /ansible-staging apt-get install ansible --no-install-recommends --yes )
+
+( . /preseed-settings
+  echo "${HOSTNAME} ansible_connection=chroot ansible_host=/target" \
+      > /ansible-staging/etc/ansible/hosts )
+
+log "running playbook"
+db_progress INFO run-ansible/progress/running-playbook
+db_progress SET 70
+
+( export HOME=/root # Ansible puts temporary files in ~/.ansible
+  chroot /ansible-staging ansible-playbook /ansible-playbooks/main.yml )
+
+db_progress STOP

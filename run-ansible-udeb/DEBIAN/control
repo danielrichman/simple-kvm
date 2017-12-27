@@ -1,0 +1,8 @@
+Package: run-ansible
+Version: 1
+Architecture: all
+Installer-Menu-Item: 7799
+Maintainer: Daniel Richman <main@danielrichman.co.uk>
+Section: debian-installer
+Priority: standard
+Description: run-ansible
