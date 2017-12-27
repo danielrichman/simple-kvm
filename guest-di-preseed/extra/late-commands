@@ -2,9 +2,6 @@
 set -o errexit -o nounset
 set -x
 
-exec > /var/log/late-commands-stdout
-exec 2> /var/log/late-commands-stderr
-
 /preseed-lib/iptables-ssh-only
 /preseed-lib/serial-console-only
 /preseed-lib/unattended-upgrades

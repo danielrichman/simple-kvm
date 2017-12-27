@@ -2,11 +2,6 @@
 set -o errexit -o nounset
 set -x
 
-export PATH=/usr/sbin:/usr/bin:/sbin:/bin
-
-exec > /var/log/early-commands-stdout
-exec 2> /var/log/early-commands-stderr
-
 . /preseed-settings
 
 chmod 700 .ssh
