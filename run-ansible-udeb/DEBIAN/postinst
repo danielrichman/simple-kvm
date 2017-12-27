@@ -12,7 +12,7 @@ log() {
 echo "log ansible-at-exit" > /tmp/ansible-at-exit
 trap '. /tmp/ansible-at-exit' EXIT
 
-db_progress START 0 100 run-ansible/progress/title
+db_progress START 0 100 debian-installer/run-ansible/title
 
 db_progress INFO run-ansible/progress/preparing-staging
 
