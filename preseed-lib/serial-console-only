@@ -1,6 +1,8 @@
 #!/bin/sh
 set -o errexit -o nounset
 
+# Intended to be run as part of late-commands, disables the VGA console in the guest.
+
 # When the VM has no console, these items slow down the boot a lot as it waits
 # for them to timeout (or something?)
 chroot /target /bin/systemctl disable getty@tty1.service console-setup.service

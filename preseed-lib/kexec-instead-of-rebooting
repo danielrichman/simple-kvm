@@ -1,4 +1,9 @@
 #!/bin/sh
+
+# Intended for use in late-commands. Configures the debian-installer
+# to use kexec to start the system, rather than rebooting. Particularly
+# useful since it allows you to reboot without installing a bootloader.
+
 set -o errexit -o nounset
 
 anna-install kexec-tools-udeb

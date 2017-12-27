@@ -1,4 +1,8 @@
 #!/bin/sh
+
+# Intended to be used in late-commands, and sets up unattended upgrades
+# in the target.
+
 set -o errexit -o nounset
 
 cat > /target/etc/apt/apt.conf.d/20auto-upgrades <<EOF

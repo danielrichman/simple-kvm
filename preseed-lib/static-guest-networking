@@ -1,4 +1,8 @@
 #!/bin/sh
+
+# Intended to be used in early-commands. Brings up the networking, and writes 
+# /etc/network/interfaces, which will later be copied by d-i into the guest.
+
 set -o errexit -o nounset
 set -x
 
