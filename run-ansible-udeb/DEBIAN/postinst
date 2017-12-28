@@ -71,7 +71,7 @@ cp ${PLUGINS_DIR}/debconf.py /ansible-staging/${PLUGINS_DIR}/
   echo "${HOSTNAME} ansible_connection=chroot ansible_host=/target" \
       > /ansible-staging/etc/ansible/hosts
   mkdir -p /target/etc/ansible/facts.d
-  echo "host4=${HOST4}" > /target/etc/ansible/facts.d/simple_kvm.facts )
+  echo "host4=${HOST4}" > /target/etc/ansible/facts.d/simple_kvm.fact )
 exit_if_subshell_returned_nonzero
 
 log "running playbook"
