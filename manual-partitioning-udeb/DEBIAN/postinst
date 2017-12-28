@@ -3,6 +3,8 @@ set -o errexit -o nounset
 
 . /usr/share/debconf/confmodule
 
+export PATH=/usr/sbin:/usr/bin:/sbin:/bin
+
 logger -t manual-partitioning "disabling partman"
 rm /var/lib/dpkg/info/partman-base.postinst
 touch /var/lib/dpkg/info/partman-base.postinst
