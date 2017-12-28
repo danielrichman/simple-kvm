@@ -2,6 +2,6 @@
 set -o errexit -o nounset
 set -x
 
-/preseed-lib/static-guest-networking
+/preseed-utils/static-guest-networking
 
-udpkg --unpack /preseed-lib/manual-partitioning.udeb
+udpkg --unpack /preseed-utils/manual-partitioning.udeb

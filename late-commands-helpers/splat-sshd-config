@@ -4,5 +4,5 @@ set -o errexit -o nounset
 # Intended to be run as part of late-commands, and applies an sshd config
 # to the guest.
 
-cp /preseed-lib/sshd_config /target/tmp/sshd_config
+cp /late-commands-helpers/sshd_config /target/tmp/sshd_config
 in-target install -o root -g root -m 644 /tmp/sshd_config /etc/ssh/sshd_config

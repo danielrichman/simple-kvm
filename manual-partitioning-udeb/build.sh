@@ -4,4 +4,4 @@ set -o errexit -o nounset -o pipefail -o xtrace
 test -d DEBIAN
 mkdir -p .build
 rsync -av DEBIAN/ .build/DEBIAN
-dpkg-deb --build .build ../preseed-lib/manual-partitioning.udeb
+dpkg-deb --build .build ../preseed-utils/manual-partitioning.udeb

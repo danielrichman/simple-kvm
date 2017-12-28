@@ -2,16 +2,16 @@
 set -o errexit -o nounset
 set -x
 
-/preseed-lib/unattended-upgrades
-/preseed-lib/splat-sshd-config
-/preseed-lib/exim4
+/late-commands-helpers/unattended-upgrades
+/late-commands-helpers/splat-sshd-config
+/late-commands-helpers/exim4
 
 mkdir -m 755 -p /target/etc/iptables
 
 cat > /target/tmp/rules.v4 <<EOF
 *filter
 
-`cat /preseed-lib/iptables-rules.v4-common`
+`cat /late-commands-helpers/iptables-rules.v4-common`
 
 -A INPUT ! -i eth0 -p udp --dport 123 -j ACCEPT
 
@@ -27,7 +27,7 @@ in-target install -o root -g root -m 644 /tmp/rules.v4 /etc/iptables/rules.v4
 cat > /target/tmp/rules.v6 <<EOF
 *filter
 
-`cat /preseed-lib/iptables-rules.v6-common`
+`cat /late-commands-helpers/iptables-rules.v6-common`
 
 -A INPUT -j REJECT
 

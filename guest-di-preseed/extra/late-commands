@@ -2,12 +2,13 @@
 set -o errexit -o nounset
 set -x
 
-/preseed-lib/iptables-ssh-only
-/preseed-lib/serial-console-only
-/preseed-lib/unattended-upgrades
-/preseed-lib/splat-sshd-config
-/preseed-lib/guest-ntp-from-host
-/preseed-lib/exim4
+/preseed-utils/serial-console-only
+
+/late-commands-helpers/iptables-ssh-only
+/late-commands-helpers/unattended-upgrades
+/late-commands-helpers/splat-sshd-config
+/late-commands-helpers/guest-ntp-from-host
+/late-commands-helpers/exim4
 
 mkdir -m 700 /target/root/.ssh
 cat > /target/tmp/root-authorized_keys <<EOF
