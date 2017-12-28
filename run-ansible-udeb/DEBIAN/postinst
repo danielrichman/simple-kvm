@@ -69,14 +69,12 @@ cp ${PLUGINS_DIR}/debconf.py /ansible-staging/${PLUGINS_DIR}/
 
 ( . /preseed-settings
 
-  echo "${HOSTNAME} ansible_connection=chroot ansible_host=/target" \
-      > /ansible-staging/etc/ansible/hosts
-
   mkdir -p /target/etc/ansible/facts.d
-  cat > /target/etc/ansible/facts.d/simple_kvm.fact <<EOF
-  [networking]
-  host4=${HOST4}
-  EOF )
+  ( echo "[networking]"
+    echo "host4=${HOST4}" ) > /target/etc/ansible/facts.d/simple_kvm.fact 
+
+  echo "${HOSTNAME} ansible_connection=chroot ansible_host=/target" \
+      > /ansible-staging/etc/ansible/hosts )
 exit_if_subshell_returned_nonzero
 
 log "running playbook"
