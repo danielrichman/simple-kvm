@@ -21,3 +21,7 @@ Description: Installing ansible in staging area
 Template: run-ansible/progress/running-ansible-failed
 Type: text
 Description: Running the ansible playbook failed. syslog should have more info.
+
+Template: run-ansible/progress/info/running
+Type: text
+Description: Running ${THINGTYPE}: ${THINGNAME}
