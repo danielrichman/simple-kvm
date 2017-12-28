@@ -69,7 +69,9 @@ cp ${PLUGINS_DIR}/debconf.py /ansible-staging/${PLUGINS_DIR}/
 
 ( . /preseed-settings
   echo "${HOSTNAME} ansible_connection=chroot ansible_host=/target" \
-      > /ansible-staging/etc/ansible/hosts )
+      > /ansible-staging/etc/ansible/hosts
+  mkdir -p /target/etc/ansible/facts.d
+  echo "host4=${host4}" > /target/etc/ansible/facts.d/simple-kvm.facts )
 exit_if_subshell_returned_nonzero
 
 log "running playbook"
@@ -78,6 +80,7 @@ db_progress SET 70
 
 ( export HOME=/root # Ansible puts temporary files in ~/.ansible
   chroot /ansible-staging ansible-playbook /ansible-playbooks/main.yml \
+      --extra-vars '{"debian_installer": true}' \
     || ( log "ansible failed"
          db_input critical run-ansible/progress/running-ansible-failed || true
          db_go || true
