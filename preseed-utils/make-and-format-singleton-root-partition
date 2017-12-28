@@ -1,0 +1,21 @@
+#!/bin/sh
+set -o errexit -o nounset
+
+if [ $# -ne 1 ]; then
+  echo "Usage: $0 /dev/vda"
+  exit 1
+fi
+
+mkfs.ext4 -F "$1"
+mkdir /target
+mount -t ext4 "$1" /target
+mkdir /target/etc
+
+cat > /target/etc/fstab <<EOF
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+$1              /               ext4    errors=remount-ro,relatime,discard      0       1
+proc            /proc           proc    defaults        0       0
+sysfs           /sys            sysfs   defaults        0       0
+tmpfs           /dev/shm        tmpfs   defaults        0       0
+devpts          /dev/pts        devpts  defaults        0       0
+EOF
