@@ -1,3 +1,7 @@
 Template: debian-installer/manual-partitioning/title
 Type: text
 Description: Run partitioning script
+
+Template: manual-partitioning/failed
+Type: text
+Description: Manual partitioning script failed!

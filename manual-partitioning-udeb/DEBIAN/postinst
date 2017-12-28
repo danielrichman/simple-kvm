@@ -5,10 +5,21 @@ set -o errexit -o nounset
 
 export PATH=/usr/sbin:/usr/bin:/sbin:/bin
 
-logger -t manual-partitioning "disabling partman"
+log() {
+    logger -t manual-partitioning "$@"
+}
+
+log "disabling partman"
 rm /var/lib/dpkg/info/partman-base.postinst
 touch /var/lib/dpkg/info/partman-base.postinst
 chmod +x /var/lib/dpkg/info/partman-base.postinst
 
-logger -t manual-partitioning "running /manual-partition"
-exec /manual-partition
+log "running /manual-partition"
+/manual-partition \
+  || ( log "/manual-partition failed"
+       db_input critical manual-partitioning/failed || true
+       db_go || true
+       exit 10 )
+
+# Workaround ash not respecting errexit when subshells are involved.
+RET=$?; [ $RET -eq 0 ] || exit $RET
