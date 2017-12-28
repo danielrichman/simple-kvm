@@ -25,7 +25,7 @@ db_progress INFO run-ansible/progress/preparing-staging
 
 log "mkdir /ansible-staging"
 mkdir /ansible-staging
-sed -i "1irm -rf umount /ansible-staging" /tmp/ansible-at-exit
+sed -i "1irm -rf /ansible-staging" /tmp/ansible-at-exit
 
 # The installer doesn't appear to set this up? Python multiprocessing needs it.
 log "mounting /dev/shm"
@@ -52,7 +52,7 @@ for i in ansible-playbooks dev dev/shm proc sys target; do
     log "bind-mounting ${i}"
     mkdir -p /ansible-staging/${i}
     mount -o bind /${i} /ansible-staging/${i}
-    sed -i "1i/ansible-staging/${i}" /tmp/ansible-at-exit
+    sed -i "1iumount /ansible-staging/${i}" /tmp/ansible-at-exit
 done
 
 log "installing ansible"
