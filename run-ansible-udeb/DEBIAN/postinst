@@ -16,8 +16,8 @@ log() {
 
 # Note, this is going to be in-memory, and will consume about 300M
 
-echo "log ansible-at-exit; sleep 10" > /tmp/ansible-at-exit
-trap '. /tmp/ansible-at-exit' EXIT
+echo "log ansible-at-exit done" > /tmp/ansible-at-exit
+trap 'log ansible-at-exit; . /tmp/ansible-at-exit' EXIT
 
 db_progress START 0 100 debian-installer/run-ansible/title
 
@@ -25,6 +25,7 @@ db_progress INFO run-ansible/progress/preparing-staging
 
 log "mkdir /ansible-staging"
 mkdir /ansible-staging
+sed -i "1irm -rf umount /ansible-staging" /tmp/ansible-at-exit
 
 # The installer doesn't appear to set this up? Python multiprocessing needs it.
 log "mounting /dev/shm"
@@ -38,7 +39,7 @@ log "bindmounting deb cache"
 ARCHS=/var/cache/apt/archives
 mkdir -p /ansible-staging/${ARCHS}
 mount -o bind /target/${ARCHS} /ansible-staging/${ARCHS}
-echo "umount /ansible-staging/${ARCHS}" >> /tmp/ansible-at-exit
+sed -i "1iumount /ansible-staging/${ARCHS}" /tmp/ansible-at-exit
 
 log "running debootstrap"
 log-output -t ansible-debootstrap \
@@ -51,9 +52,8 @@ for i in ansible-playbooks dev dev/shm proc sys target; do
     log "bind-mounting ${i}"
     mkdir -p /ansible-staging/${i}
     mount -o bind /${i} /ansible-staging/${i}
-    echo "umount -l /ansible-staging/${i}" >> /tmp/ansible-at-exit
+    sed -i "1i/ansible-staging/${i}" /tmp/ansible-at-exit
 done
-echo "rm -rf /ansible-staging" >> /tmp/ansible-at-exit
 
 log "installing ansible"
 db_progress INFO run-ansible/progress/installing-ansible
