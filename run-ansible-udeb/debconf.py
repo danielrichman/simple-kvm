@@ -11,6 +11,8 @@ class CallbackModule(CallbackBase):
     def __init__(self):
         self._enabled = False
 
+        super(CallbackModule, self).__init__()
+
         if "DEBCONF_REDIR" in os.environ:
             try:
                 self._debconf_in  = os.fdopen(os.dup(0), 'r')
@@ -30,8 +32,6 @@ class CallbackModule(CallbackBase):
                 del os.environ[env]
             except:
                 pass
-
-        super(CallbackModule, self).__init__()
     
     def _communicate(self, line):
         if self._enabled:
@@ -50,8 +50,14 @@ class CallbackModule(CallbackBase):
         self._communicate("PROGRESS INFO {}".format(template))
 
     def _set_progress(self):
-        p = (self._progress_currant * 100) // self._progress_total
+        num = self._progress_current
+        denom = self._progress_total
+
+        self._display.vvvv("progress bar: {}/{}".format(num, denom))
+
+        p = (num * 100) // denom
         p = min(p, 100)
+
         self._communicate("PROGRESS SET {}".format(p))
 
     def v2_playbook_on_play_start(self, play):
@@ -62,7 +68,7 @@ class CallbackModule(CallbackBase):
 
     def v2_playbook_on_task_start(self, task, is_conditional):
         self._thing_start("task", task)
-        self._progress_currant += 1
+        self._progress_current += 1
         self._set_progress()
 
     def v2_playbook_on_cleanup_task_start(self, task):
