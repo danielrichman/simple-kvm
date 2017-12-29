@@ -57,10 +57,11 @@ done
 
 log "installing ansible"
 db_progress INFO run-ansible/progress/installing-ansible
-db_progress SET 30
 
 ( unset DEBCONF_OLD_FD_BASE DEBCONF_REDIR DEBIAN_FRONTEND DEBIAN_HAS_FRONTEND
-  chroot /ansible-staging apt-get install ansible --no-install-recommends --yes )
+  chroot /ansible-staging -- \
+      debconf-apt-progress --logstderr --from 0 --to 100 -- \
+      apt-get install ansible --no-install-recommends --yes )
 exit_if_subshell_returned_nonzero
 
 PLUGINS_DIR=/usr/share/ansible/plugins/callback
@@ -79,7 +80,6 @@ exit_if_subshell_returned_nonzero
 
 log "running playbook"
 db_progress INFO run-ansible/progress/running-playbook
-db_progress SET 70
 
 ( export HOME=/root # Ansible puts temporary files in ~/.ansible
   chroot /ansible-staging ansible-playbook /ansible-playbooks/main.yml \
