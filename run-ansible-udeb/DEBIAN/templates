@@ -2,21 +2,9 @@ Template: debian-installer/run-ansible/title
 Type: text
 Description: Set up staging chroot for ansible, and run it
 
-Template: run-ansible/progress/running-ansible
-Type: text
-Description: Running ansible on /target
-
 Template: run-ansible/progress/preparing-staging
 Type: text
 Description: Preparing staging chroot
-
-Template: run-ansible/progress/installing-ansible
-Type: text
-Description: Installing ansible in staging area
-
-Template: run-ansible/progress/running-playbook
-Type: text
-Description: Installing ansible in staging area
 
 Template: run-ansible/progress/running-ansible-failed
 Type: text

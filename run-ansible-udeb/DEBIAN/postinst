@@ -19,9 +19,7 @@ log() {
 echo "log ansible-at-exit done" > /tmp/ansible-at-exit
 trap 'log ansible-at-exit; . /tmp/ansible-at-exit' EXIT
 
-db_progress START 0 100 debian-installer/run-ansible/title
-
-db_progress INFO run-ansible/progress/preparing-staging
+db_progress START 0 100 run-ansible/progress/preparing-staging
 
 log "mkdir /ansible-staging"
 mkdir /ansible-staging
@@ -55,11 +53,12 @@ for i in ansible-playbooks dev dev/shm proc sys target; do
     sed -i "1iumount /ansible-staging/${i}" /tmp/ansible-at-exit
 done
 
+db_progress STOP
+
 log "installing ansible"
-db_progress INFO run-ansible/progress/installing-ansible
 
 chroot /ansible-staging \
-  debconf-apt-progress --logstderr --from 0 --to 100 -- \
+  debconf-apt-progress --logstderr \
   apt-get install ansible --no-install-recommends --yes
 
 PLUGINS_DIR=/usr/share/ansible/plugins/callback
@@ -77,11 +76,10 @@ cp ${PLUGINS_DIR}/debconf.py /ansible-staging/${PLUGINS_DIR}/
 exit_if_subshell_returned_nonzero
 
 log "running playbook"
-db_progress INFO run-ansible/progress/running-playbook
 
 ( export HOME=/root # Ansible puts temporary files in ~/.ansible
   chroot /ansible-staging ansible-playbook /ansible-playbooks/main.yml \
-      --extra-vars '{"debian_installer": true}' -vvvv \
+      --extra-vars '{"debian_installer": true}' \
     || ( log "ansible failed"
          db_input critical run-ansible/progress/running-ansible-failed || true
          db_go || true
@@ -89,5 +87,3 @@ db_progress INFO run-ansible/progress/running-playbook
 exit_if_subshell_returned_nonzero
 
 log "done running playbook"
-
-db_progress STOP
