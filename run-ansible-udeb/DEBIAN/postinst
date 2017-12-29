@@ -55,6 +55,7 @@ done
 
 log "installing ansible"
 
+db_progress INFO run-ansible/progress/installing-ansible
 chroot /ansible-staging \
   debconf-apt-progress --from 100 --to 150 --logstderr -- \
   apt-get install ansible --no-install-recommends --yes

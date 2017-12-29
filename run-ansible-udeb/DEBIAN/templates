@@ -4,11 +4,15 @@ Description: Set up staging chroot for ansible, and run it
 
 Template: run-ansible/progress/preparing-staging
 Type: text
-Description: Preparing staging chroot
+Description: Preparing staging chroot for ansible
+
+Template: run-ansible/progress/installing-ansible
+Type: text
+Description: Installing ansible in staging chroot
 
 Template: run-ansible/progress/running-ansible-failed
 Type: text
-Description: Running the ansible playbook failed. syslog should have more info.
+Description: Running the ansible playbook failed. See syslog.
 
 Template: run-ansible/progress/info/running
 Type: text
