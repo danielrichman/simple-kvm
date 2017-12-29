@@ -19,7 +19,7 @@ log() {
 echo "log ansible-at-exit done" > /tmp/ansible-at-exit
 trap 'log ansible-at-exit; . /tmp/ansible-at-exit' EXIT
 
-db_progress START 0 100 run-ansible/progress/preparing-staging
+db_progress START 0 150 run-ansible/progress/preparing-staging
 
 log "mkdir /ansible-staging"
 mkdir /ansible-staging
@@ -53,13 +53,13 @@ for i in ansible-playbooks dev dev/shm proc sys target; do
     sed -i "1iumount /ansible-staging/${i}" /tmp/ansible-at-exit
 done
 
-db_progress STOP
-
 log "installing ansible"
 
 chroot /ansible-staging \
-  debconf-apt-progress --logstderr \
+  debconf-apt-progress --from 100 --to 150 --logstderr -- \
   apt-get install ansible --no-install-recommends --yes
+
+db_progress STOP
 
 PLUGINS_DIR=/usr/share/ansible/plugins/callback
 mkdir -p /ansible-staging/${PLUGINS_DIR}
