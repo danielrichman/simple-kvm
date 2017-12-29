@@ -63,7 +63,7 @@ class CallbackModule(CallbackBase):
     def v2_playbook_on_play_start(self, play):
         self._thing_start("play", play)
         self._progress_current = 0
-        self._progress_total = len(play.tasks())
+        self._progress_total = len(play.compile())
         self._set_progress()
 
     def v2_playbook_on_task_start(self, task, is_conditional):
