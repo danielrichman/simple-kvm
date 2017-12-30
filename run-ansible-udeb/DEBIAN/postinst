@@ -66,15 +66,13 @@ PLUGINS_DIR=/usr/share/ansible/plugins/callback
 mkdir -p /ansible-staging/${PLUGINS_DIR}
 cp ${PLUGINS_DIR}/debconf.py /ansible-staging/${PLUGINS_DIR}/
 
-( . /preseed-settings
+if [ -f /ansible-extra-facts ]; then
+    mkdir -p /target/etc/ansible/facts.d
+    /ansible-extra-facts > /target/etc/ansible/facts.d/simple_kvm.fact
+fi
 
-  mkdir -p /target/etc/ansible/facts.d
-  ( echo "[networking]"
-    echo "host4=${HOST4}" ) > /target/etc/ansible/facts.d/simple_kvm.fact 
-
-  echo "${HOSTNAME} ansible_connection=chroot ansible_host=/target" \
-      > /ansible-staging/etc/ansible/hosts )
-exit_if_subshell_returned_nonzero
+echo "$(hostname) ansible_connection=chroot ansible_host=/target" \
+  > /ansible-staging/etc/ansible/hosts
 
 log "running playbook"
 
