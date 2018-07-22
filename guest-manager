@@ -41,7 +41,7 @@ def load_and_validate_config():
         guest_disks = frozenset(guest["disks"])
         inter = guest_disks & all_disk_names
         if inter:
-            raise ValueError("disk appears on two vms", inter.pop())
+            raise ValueError("disk appears on two vms", next(iter(inter)))
         all_disk_names.update(guest_disks)
 
     for guest in guests.values():
