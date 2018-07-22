@@ -36,6 +36,13 @@ def load_and_validate_config():
         if len(ifname.encode("ascii")) >= 16:
             raise ValueError("tap device name too long", ifname)
 
+    all_disk_names = set()
+    for guest in guests.values():
+        inter = guest["disks"] & all_disk_names
+        if inter:
+            raise ValueError("disk appears on two vms", inter.pop())
+        all_disk_names |= guest["disks"]
+
     for guest in guests.values():
         ok = ("kernel" in guest) == ("initrd" in guest) == ("append" in guest)
         if not ok:
