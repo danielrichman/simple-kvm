@@ -117,7 +117,7 @@ def open_disks(guest_name):
         os.set_inheritable(fd, True)
         disk_fds.append(fd)
 
-    return fd
+    return disk_fds
 
 def drop_privileges(guest_name, kvm_group=False):
     user = pwd.getpwnam(guests[guest_name]["user"])
