@@ -38,10 +38,11 @@ def load_and_validate_config():
 
     all_disk_names = set()
     for guest in guests.values():
-        inter = guest["disks"] & all_disk_names
+        guest_disks = frozenset(guest["disks"])
+        inter = guest_disks & all_disk_names
         if inter:
             raise ValueError("disk appears on two vms", inter.pop())
-        all_disk_names |= guest["disks"]
+        all_disk_names.update(guest_disks)
 
     for guest in guests.values():
         ok = ("kernel" in guest) == ("initrd" in guest) == ("append" in guest)
