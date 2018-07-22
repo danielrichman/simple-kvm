@@ -100,9 +100,15 @@ def open_tap(guest_name):
 
     return fd
 
-def open_disk(name):
-    fd = os.open("/dev/vg0/{}".format(name), os.O_RDWR)
-    os.set_inheritable(fd, True)
+def open_disks(guest_name):
+    guest = guests[guest_name]
+    disk_fds = []
+
+    for disk_name in guest["disks"]:
+        fd = os.open("/dev/vg0/{}".format(disk_name), os.O_RDWR)
+        os.set_inheritable(fd, True)
+        disk_fds.append(fd)
+
     return fd
 
 def drop_privileges(guest_name, kvm_group=False):
@@ -129,7 +135,7 @@ def make_socket_dir(guest_name):
 def socket_path(guest_name, socket_name):
     return os.path.join(socket_dir(guest_name), socket_name)
 
-def exec_kvm(guest_name, disk_fd, tap_fd):
+def exec_kvm(guest_name, disk_fds, tap_fd):
     guest = guests[guest_name]
 
     prog = "/usr/bin/qemu-system-x86_64"
@@ -147,9 +153,17 @@ def exec_kvm(guest_name, disk_fd, tap_fd):
         , "-chardev", "socket,id=charcontrol,path={},server,nowait".format(socket_path(guest_name, "control"))
         , "-mon", "chardev=charcontrol,id=control,mode=control"
         , "-rtc", "base=utc"
-        , "-add-fd", "fd={},set=7".format(disk_fd)  # I don't understand what a 'fdset' is
-        , "-drive", "file=/dev/fdset/7,if=virtio,index=1,format=raw"
-        , "-netdev", "tap,fd={},id=netdev1".format(tap_fd)
+        ]
+
+    for idx, disk_fd in enumerate(disk_fds):
+        fdset_id = 7 + idx  # I don't understand what a 'fdset' is
+        args += \
+            [ "-add-fd", "fd={},set={}".format(disk_fd, fdset_id)
+            , "-drive", "file=/dev/fdset/{},if=virtio,index=1,format=raw".format(fdset_id)
+            ]
+
+    args += \
+        [ "-netdev", "tap,fd={},id=netdev1".format(tap_fd)
         , "-device", "virtio-net-pci,netdev=netdev1,id=net1,mac={}".format(guest["mac"])
         , "-chardev", "socket,id=charconsole,path={},server,nowait".format(socket_path(guest_name, "console"))
         , "-serial", "chardev:charconsole"
@@ -229,10 +243,10 @@ def main():
         os.set_inheritable(lock_fd, True) # we want qemu to hold the lock
         acquire_lock(lock_fd)
         tap_fd = open_tap(guest_name)
-        disk_fd = open_disk(guest_name)
+        disk_fds = open_disks(guest_name)
         make_socket_dir(guest_name)
         drop_privileges(guest_name, kvm_group=True)
-        exec_kvm(guest_name, disk_fd, tap_fd)
+        exec_kvm(guest_name, disk_fds, tap_fd)
     elif action in ("monitor", "console"):
         drop_privileges(guest_name)
         exec_socat(socket_path(guest_name, action))
