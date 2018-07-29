@@ -164,7 +164,7 @@ def exec_kvm(guest_name, disk_fds, tap_fd):
         ]
 
     for idx, disk_fd in enumerate(disk_fds):
-        fdset_id = 7 + idx  # I don't understand what a 'fdset' is
+        fdset_id = 100 + idx  # I don't understand what a 'fdset' is
         bus_index = 1 + idx
         args += \
             [ "-add-fd", "fd={},set={}".format(disk_fd, fdset_id)
