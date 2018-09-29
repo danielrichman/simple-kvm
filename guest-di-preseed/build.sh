@@ -3,7 +3,7 @@ set -o errexit -o nounset -o pipefail -o xtrace
 
 (cd ../manual-partitioning-udeb; ./build.sh)
 
-cp /usr/lib/debian-installer/images/9/amd64/text/debian-installer/amd64/initrd.gz .
-gunzip initrd.gz 
-(cd extra; find -L . | fakeroot cpio --quiet -LF ../initrd --append -o -H newc)
-gzip --fast initrd
+cat \
+    /usr/lib/debian-installer/images/9/amd64/text/debian-installer/amd64/initrd.gz \
+    <(cd extra; find -L . | cpio --quiet -R root -L -o -H newc | gzip --fast) \
+    > initrd.gz

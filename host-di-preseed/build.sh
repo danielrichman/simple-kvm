@@ -7,7 +7,10 @@ for type in rsa dsa ecdsa; do
     ssh-keygen -l -f extra/etc/ssh/ssh_host_${type}_key
 done
 
-cp /usr/lib/debian-installer/images/9/amd64/text/debian-installer/amd64/{linux,initrd.gz} .
-gunzip initrd.gz 
-(cd extra; find -L . | fakeroot cpio --quiet -LF ../initrd --append -o -H newc)
-gzip --fast initrd
+INSTALLER=/usr/lib/debian-installer/images/9/amd64/text/debian-installer/amd64
+
+cp $INSTALLER/linux .
+cat \
+    $INSTALLER/initrd.gz \
+    <(cd extra; find -L . | cpio --quiet -R root -L -o -H newc | gzip --fast) \
+    > initrd.gz
