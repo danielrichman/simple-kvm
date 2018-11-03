@@ -6,7 +6,10 @@ After=network.target
 ExecStart=/usr/local/bin/guest-manager daniel-yocto boot
 ExecStop=/usr/local/bin/guest-manager daniel-yocto acpi-shutdown
 KillMode=none
-Restart=no
+# You may prefer Restart=no.
+StartLimitInterval=1800s
+StartLimitBurst=2
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
