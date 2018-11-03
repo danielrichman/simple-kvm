@@ -5,3 +5,4 @@ set -x
 /preseed-utils/static-guest-networking
 
 udpkg --unpack /preseed-utils/manual-partitioning.udeb
+# udpkg --unpack /preseed-utils/run-ansible.udeb

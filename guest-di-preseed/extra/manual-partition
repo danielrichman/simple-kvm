@@ -2,3 +2,7 @@
 set -o errexit -o nounset
 
 /preseed-utils/make-and-format-singleton-root-partition /dev/vda
+
+# cat >> /target/etc/fstab <<EOF
+# /dev/vdb        /srv            ext4    errors=remount-ro,relatime,discard,acl      0       2
+# EOF

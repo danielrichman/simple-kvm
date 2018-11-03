@@ -2,22 +2,49 @@
 set -o errexit -o nounset
 set -x
 
-/late-commands-helpers/unattended-upgrades
-/late-commands-helpers/splat-sshd-config
-/late-commands-helpers/exim4
+# This provides a bare-minimum. You can delete this and use ansible instead:
+# there's nothing particularly special about the config in this file.
+
+
+# Unattended upgrades:
+
+cat > /target/etc/apt/apt.conf.d/20auto-upgrades <<EOF
+APT::Periodic::Update-Package-Lists "1";
+APT::Periodic::Unattended-Upgrade "1";
+EOF
+
+cat > /target/etc/apt/apt.conf.d/50unattended-upgrades <<EOF
+Unattended-Upgrade::Origins-Pattern {
+    "o=Debian";
+};
+
+Unattended-Upgrade::Mail "root";
+Unattended-Upgrade::MailOnlyOnError "true";
+EOF
+
+
+# iptables:
 
 mkdir -m 755 -p /target/etc/iptables
 
 cat > /target/tmp/rules.v4 <<EOF
 *filter
 
-`cat /late-commands-helpers/iptables-rules.v4-common`
+-P INPUT DROP
+-P FORWARD ACCEPT
+-P OUTPUT ACCEPT
 
+-A INPUT -i lo -j ACCEPT
+-A INPUT ! -i lo -s 127.0.0.0/8 -j DROP
+-A INPUT ! -i lo -d 127.0.0.0/8 -j DROP
+
+-A INPUT -p icmp --icmp-type echo-request -j ACCEPT
+
+-A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+-A INPUT -p tcp --dport 22 -m state --state NEW -j ACCEPT
 -A INPUT ! -i eth0 -p udp --dport 123 -j ACCEPT
 
 -A INPUT -j REJECT
-
--A OUTPUT -p icmp --icmp-type time-exceeded -j DROP
 
 COMMIT
 EOF
@@ -27,22 +54,36 @@ in-target install -o root -g root -m 644 /tmp/rules.v4 /etc/iptables/rules.v4
 cat > /target/tmp/rules.v6 <<EOF
 *filter
 
-`cat /late-commands-helpers/iptables-rules.v6-common`
+-P INPUT DROP
+-P FORWARD ACCEPT
+-P OUTPUT ACCEPT
+
+-A INPUT -i lo -j ACCEPT
+-A INPUT ! -i lo -s ::1 -j DROP
+-A INPUT ! -i lo -d ::1 -j DROP
+
+-A INPUT -p icmpv6 --icmpv6-type echo-request -j ACCEPT
+-A INPUT -p icmpv6 --icmpv6-type echo-reply -j ACCEPT
+-A INPUT -p icmpv6 --icmpv6-type destination-unreachable -j ACCEPT
+-A INPUT -p icmpv6 --icmpv6-type packet-too-big -j ACCEPT
+-A INPUT -p icmpv6 --icmpv6-type time-exceeded -j ACCEPT
+-A INPUT -p icmpv6 --icmpv6-type parameter-problem -j ACCEPT
+-A INPUT -p icmpv6 --icmpv6-type neighbor-solicitation -m hl --hl-eq 255 -j ACCEPT
+-A INPUT -p icmpv6 --icmpv6-type neighbor-advertisement -m hl --hl-eq 255 -j ACCEPT
+-A INPUT -p icmpv6 -j DROP
+
+-A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+-A INPUT -p tcp --dport 22 -m state --state NEW -j ACCEPT
 
 -A INPUT -j REJECT
-
--A OUTPUT -p icmpv6 --icmpv6-type time-exceeded -j DROP
 
 COMMIT
 EOF
 
 in-target install -o root -g root -m 644 /tmp/rules.v6 /etc/iptables/rules.v6
 
-cat > /target/tmp/aliases <<EOF
-*: dev-null@localhost.localdomain
-EOF
 
-in-target install -o root -g root -m 644 /tmp/aliases /etc/aliases
+# NTP:
 
 cat > /target/tmp/ntp.conf <<EOF
 driftfile /var/lib/ntp/ntp.drift
@@ -63,9 +104,15 @@ EOF
 
 in-target install -o root -g root -m 644 /tmp/ntp.conf /etc/ntp.conf
 
+
+# Authentication:
+
 mkdir -m 700 /target/root/.ssh
 cp /.ssh/authorized_keys /target/tmp/root-authorized_keys
 in-target install -o root -g root -m 644 /tmp/root-authorized_keys /root/.ssh/authorized_keys
+
+
+# simple-kvm for guests
 
 mkdir /target/usr/local/lib/simple-kvm
 # It will be root:staff g+s by default
@@ -78,4 +125,5 @@ cp /target/usr/local/lib/simple-kvm/sysctl.conf         /target/etc/sysctl.conf
 ln -s /usr/local/lib/simple-kvm/guest-manager /target/usr/local/bin
 ln -s /usr/local/lib/simple-kvm/random-mac    /target/usr/local/bin
 
-# raid monitoring
+
+# todo: raid monitoring
