@@ -5,6 +5,8 @@ import os
 import errno
 import pwd
 import grp
+import tempfile
+import stat
 import subprocess
 import struct
 import socket
@@ -143,7 +145,55 @@ def make_socket_dir(guest_name):
 def socket_path(guest_name, socket_name):
     return os.path.join(socket_dir(guest_name), socket_name)
 
-def exec_kvm(guest_name, disk_fds, tap_fd):
+def fd_path(fd):
+    return "/proc/self/fd/{}".format(fd)
+
+def build_composite_initrd(initrd_spec, chown_to):
+    with tempfile.TemporaryFile(prefix='guest-manager-initrd-') as temp:
+        for entry in initrd_spec:
+            mode = os.stat(entry).st_mode
+
+            if stat.S_ISDIR(mode):
+                # directories are packed up with cpio and included
+                with subprocess.Popen(["/usr/bin/find", "-L", "."], cwd=entry, stdout=subprocess.PIPE) as find:
+                    cmd = ["/bin/cpio", "--quiet", "-R", "root", "-L", "-o", "-H", "newc"]
+                    subprocess.check_call(cmd, cwd=entry, stdin=find.stdout, stdout=temp)
+                    if find.wait() != 0:
+                        raise Exception("find failed while building initrd")
+
+            elif stat.S_ISREG(mode):
+                # files (which must be cpio archives) are appended
+                subprocess.check_call(["/bin/cat", "--", entry], stdout=temp, close_fds=True)
+
+            else:
+                raise Exception("can't include non-file/directory in initrd", entry)
+
+        os.fchown(temp.fileno(), chown_to, -1)
+
+        # return a read only FD instead (and moreover one that will outlive the 'with')
+        return os.open(fd_path(temp.fileno()), os.O_RDONLY)
+
+def setup_boot_spec(guest_name):
+    guest = guests[guest_name]
+
+    if "kernel" not in guest:
+        return None
+
+    kernel_fd = os.open(guest["kernel"], os.O_RDONLY)
+
+    initrd = guest["initrd"]
+    if isinstance(initrd, list):
+        user = pwd.getpwnam(guest["user"])
+        initrd_fd = build_composite_initrd(initrd, chown_to=user.pw_uid)
+    else:
+        initrd_fd = os.open(initrd, os.O_RDONLY)
+
+    os.set_inheritable(kernel_fd, True)
+    os.set_inheritable(initrd_fd, True)
+
+    return {"kernel_fd": kernel_fd, "initrd_fd": initrd_fd, "append": guest["append"]}
+
+def exec_kvm(guest_name, disk_fds, tap_fd, boot_spec):
     guest = guests[guest_name]
 
     prog = "/usr/bin/qemu-system-x86_64"
@@ -178,11 +228,11 @@ def exec_kvm(guest_name, disk_fds, tap_fd):
         , "-serial", "chardev:charconsole"
         ]
 
-    if "kernel" in guest:
+    if boot_spec is not None:
         args += \
-            [ "-kernel", guest["kernel"]
-            , "-initrd", guest["initrd"]
-            , "-append", guest["append"]
+            [ "-kernel", fd_path(boot_spec["kernel_fd"])
+            , "-initrd", fd_path(boot_spec["initrd_fd"])
+            , "-append", boot_spec["append"]
             ]
 
     os.execve(prog, args, {})
@@ -253,9 +303,10 @@ def main():
         acquire_lock(lock_fd)
         tap_fd = open_tap(guest_name)
         disk_fds = open_disks(guest_name)
+        boot_spec = setup_boot_spec(guest_name)
         make_socket_dir(guest_name)
         drop_privileges(guest_name, kvm_group=True)
-        exec_kvm(guest_name, disk_fds, tap_fd)
+        exec_kvm(guest_name, disk_fds, tap_fd, boot_spec)
     elif action in ("monitor", "console"):
         drop_privileges(guest_name)
         exec_socat(socket_path(guest_name, action))
