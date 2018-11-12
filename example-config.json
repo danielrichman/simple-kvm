@@ -1,5 +1,6 @@
 { "daniel-yocto":
-    { "user": "guest-d-yocto"
+    { "user": "guest-daniel-yocto"
+    , "disks": ["daniel-yocto"]
     , "ifname": "tap-d-yocto"
     , "ips": ["GG.GG.GG.GG", "MMMM:MMMM:MMMM:MMMM::1"]
     , "ram_mbs": 2048
@@ -11,6 +12,7 @@
     }
 , "debian-installer":
     { "user": "guest-installer"
+    , "disks": ["installer"]
     , "ifname": "tap-installer"
     , "ips": ["NNN.NNN.NNN.NNN"]
     , "ram_mbs": 2048
