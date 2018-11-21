@@ -13,6 +13,7 @@ import socket
 import fcntl
 import json
 import signal
+import resource
 
 
 config_file = "/etc/guests.json"
@@ -135,6 +136,9 @@ def make_hugepages_folder(guest_name):
     os.makedirs(name, exist_ok=True)
     os.chmod(name, 0o700)
     os.chown(name, user.pw_uid, user.pw_gid)
+
+def allow_unlimited_mlock():
+    resource.setrlimit(resource.RLIMIT_MEMLOCK, (resource.RLIM_INFINITY, resource.RLIM_INFINITY))
 
 def drop_privileges(guest_name, kvm_group=False):
     user = user_pwd(guest_name)
@@ -331,6 +335,7 @@ def main():
         boot_spec = setup_boot_spec(guest_name)
         make_socket_dir(guest_name)
         make_hugepages_folder(guest_name)
+        allow_unlimited_mlock()
         drop_privileges(guest_name, kvm_group=True)
         exec_kvm(guest_name, disk_fds, tap_fd, boot_spec)
     elif action in ("monitor", "console"):
