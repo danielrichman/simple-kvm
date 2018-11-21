@@ -168,6 +168,13 @@ def build_composite_initrd(initrd_spec, chown_to):
             else:
                 raise Exception("can't include non-file/directory in initrd", entry)
 
+            # uncompressed CPIO archives must be 4-byte aligned
+            # (if we write 4 useless bytes, it will be ignored; that's fine)
+            temp.seek(0, os.SEEK_END)
+            padding = 4 - temp.tell() % 4
+            temp.write(b'\0' * padding)
+            temp.flush()
+
         os.fchown(temp.fileno(), chown_to, -1)
 
         # return a read only FD instead (and moreover one that will outlive the 'with')
