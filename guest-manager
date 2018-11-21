@@ -226,6 +226,7 @@ def exec_kvm(guest_name, disk_fds, tap_fd, boot_spec):
         , "-m", str(guest["ram_mbs"])
         , "-mem-path", hugepages_folder(guest_name)
         , "-mem-prealloc"
+        , "-realtime", "mlock=on"
         , "-smp", "{0},sockets={0},cores=1,threads=1".format(guest["cpus"])
         , "-name", guest_name
         , "-nographic"        # don't try to open a gui
