@@ -121,8 +121,23 @@ def open_disks(guest_name):
 
     return disk_fds
 
+def user_pwd(guest_name):
+    return pwd.getpwnam(guests[guest_name]["user"])
+
+def hugepages_folder(guest_name):
+    user = guests[guest_name]["user"]
+    return "/dev/hugepages/{}".format(user)
+
+def make_hugepages_folder(guest_name):
+    name = hugepages_folder(guest_name)
+    user = user_pwd(guest_name)
+
+    os.makedirs(name, exist_ok=True)
+    os.chmod(name, 0o700)
+    os.chown(name, user.pw_uid, user.pw_gid)
+
 def drop_privileges(guest_name, kvm_group=False):
-    user = pwd.getpwnam(guests[guest_name]["user"])
+    user = user_pwd(guest_name)
     kvm = grp.getgrnam("kvm")
     os.setgid(user.pw_gid)
     if kvm_group:
@@ -139,7 +154,7 @@ def make_socket_dir(guest_name):
     d = socket_dir(guest_name)
     os.makedirs(d, exist_ok=True)
     os.chmod(d, 0o770)
-    user = pwd.getpwnam(guests[guest_name]["user"])
+    user = user_pwd(guest_name)
     os.chown(d, os.getuid(), user.pw_gid)
 
 def socket_path(guest_name, socket_name):
@@ -190,7 +205,7 @@ def setup_boot_spec(guest_name):
 
     initrd = guest["initrd"]
     if isinstance(initrd, list):
-        user = pwd.getpwnam(guest["user"])
+        user = user_pwd(guest_name)
         initrd_fd = build_composite_initrd(initrd, chown_to=user.pw_uid)
     else:
         initrd_fd = os.open(initrd, os.O_RDONLY)
@@ -209,6 +224,8 @@ def exec_kvm(guest_name, disk_fds, tap_fd, boot_spec):
         , "-M", "pc-1.1" # emulated machine type
         , "-enable-kvm"
         , "-m", str(guest["ram_mbs"])
+        , "-mem-path", hugepages_folder(guest_name)
+        , "-mem-prealloc"
         , "-smp", "{0},sockets={0},cores=1,threads=1".format(guest["cpus"])
         , "-name", guest_name
         , "-nographic"        # don't try to open a gui
@@ -312,6 +329,7 @@ def main():
         disk_fds = open_disks(guest_name)
         boot_spec = setup_boot_spec(guest_name)
         make_socket_dir(guest_name)
+        make_hugepages_folder(guest_name)
         drop_privileges(guest_name, kvm_group=True)
         exec_kvm(guest_name, disk_fds, tap_fd, boot_spec)
     elif action in ("monitor", "console"):
