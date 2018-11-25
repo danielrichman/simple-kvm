@@ -106,8 +106,6 @@ def open_tap(guest_name):
     ip("addr", "add", "fe80::1", "dev", ifname)
     for addr in ips:
         ip("route", "add", addr, "dev", ifname)
-        if ":" in addr:
-            ip("neigh", "add", "proxy", addr, "dev", "eth0")
 
     return fd
 
