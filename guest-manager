@@ -223,6 +223,7 @@ def exec_kvm(guest_name, disk_fds, tap_fd, boot_spec):
     prog = "/usr/bin/qemu-system-x86_64"
     args = \
         [ "qemu-KVM:{}".format(guest_name)
+        , "-cpu", "host"
         , "-M", "pc-1.1" # emulated machine type
         , "-enable-kvm"
         , "-m", str(guest["ram_mbs"])
@@ -245,7 +246,7 @@ def exec_kvm(guest_name, disk_fds, tap_fd, boot_spec):
         bus_index = 1 + idx
         args += \
             [ "-add-fd", "fd={},set={}".format(disk_fd, fdset_id)
-            , "-drive", "file=/dev/fdset/{},if=virtio,index={},format=raw".format(fdset_id, bus_index)
+            , "-drive", "file=/dev/fdset/{},cache=none,if=virtio,index={},format=raw".format(fdset_id, bus_index)
             ]
 
     args += \
