@@ -79,6 +79,7 @@ echo "$(hostname) ansible_connection=chroot ansible_host=/target" \
 log "running playbook"
 
 ( export HOME=/root # Ansible puts temporary files in ~/.ansible
+  export ANSIBLE_LOG_PATH=/var/log/ansible.log
   chroot /ansible-staging ansible-playbook /ansible-playbooks/main.yml \
       --extra-vars '{"debian_installer": true}' \
     || ( log "ansible failed"
