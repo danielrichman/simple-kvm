@@ -12,7 +12,7 @@ Description: Installing ansible in staging chroot
 
 Template: run-ansible/progress/running-ansible-failed
 Type: text
-Description: Running the ansible playbook failed. See syslog.
+Description: Running the ansible playbook failed. See /ansible-staging/var/log/ansible.log
 
 Template: run-ansible/progress/info/running
 Type: text
