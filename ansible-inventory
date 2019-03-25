@@ -1,0 +1,23 @@
+#!/usr/bin/python3
+
+import sys
+import json
+
+if sys.argv[1:] != ["--list"]:
+    raise Exception("Usage: {0[0]} --list".format(sys.argv))
+
+with open("/etc/guests.json") as f:
+    guests = json.load(f)
+
+def hostvars_for_guest(guest):
+    return {"ansible_host": guest["ips"][0]}
+
+hostvars = {name: hostvars_for_guest(g) for name, g in guests.items()}
+
+result = \
+    { "_meta": { "hostvars": hostvars }
+    , "all": { "children": [ "ungrouped" ] }
+    , "ungrouped": list(guests.keys())
+    }
+
+json.dump(result, sys.stdout, indent=2)
