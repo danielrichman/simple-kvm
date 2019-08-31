@@ -56,9 +56,11 @@ done
 log "installing ansible"
 
 db_progress INFO run-ansible/progress/installing-ansible
+# It looks like ansible depends on python3-distutils, but the package doesn't
+# know that, so we have to explicitly install it here.
 chroot /ansible-staging \
   debconf-apt-progress --from 100 --to 150 --logstderr -- \
-  apt-get install ansible --no-install-recommends --yes
+  apt install ansible python3-distutils --no-install-recommends --yes
 
 db_progress STOP
 
