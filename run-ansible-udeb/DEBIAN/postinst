@@ -75,7 +75,7 @@ if grep ^HOST4= /preseed-settings 2> /dev/null; then
         echo "host4=${HOST4}" ) > /target/etc/ansible/facts.d/simple_kvm.fact )
 fi
 
-echo "$(hostname) ansible_connection=chroot ansible_host=/target" \
+echo "$(hostname) ansible_connection=chroot ansible_host=/target ansible_python_interpreter=/usr/bin/python3" \
   > /ansible-staging/etc/ansible/hosts
 
 log "running playbook"
