@@ -10,7 +10,10 @@ with open("/etc/guests.json") as f:
     guests = json.load(f)
 
 def hostvars_for_guest(guest):
-    return {"ansible_host": guest["ips"][0]}
+    return \
+        { "ansible_host": guest["ips"][0]
+        , "ansible_python_interpreter": "/usr/bin/python3"
+        }
 
 hostvars = {name: hostvars_for_guest(g) for name, g in guests.items()}
 
