@@ -55,7 +55,7 @@ echo "$(hostname) ansible_connection=local ansible_python_interpreter=/usr/bin/p
 
 log "running playbook"
 
-( export ANSIBLE_LOCAL_TMP=/ansible-infra/tmp
+( export ANSIBLE_LOCAL_TEMP=/ansible-infra/tmp
   export ANSIBLE_LOG_PATH=/ansible-infra/ansible.log
   export ANSIBLE_CALLBACK_PLUGINS=/ansible-infra/callback-plugins
   in-target \

@@ -19,21 +19,25 @@ class CallbackModule(CallbackBase):
 
         super(CallbackModule, self).__init__()
 
-        if "DEBCONF_REDIR" in os.environ:
+        if os.environ.get("DEBCONF_FRONTEND") == "passthrough":
             try:
-                self._debconf_in  = os.fdopen(os.dup(0), 'r')
-                self._debconf_out = os.fdopen(3, 'w')
-            except:
-                self._display.vvvv("failed to fdopen debconf fd")
+                readfd = int(os.environ["DEBCONF_READFD"])
+                self._debconf_in  = os.fdopen(os.dup(readfd), 'r')
+                writefd = int(os.environ["DEBCONF_WRITEFD"])
+                self._debconf_out = os.fdopen(writefd, 'w')
+            except Exception as e:
+                self._display.vvvv("failed to fdopen debconf fd: {}".format(e))
             else:
                 self._enabled = True
-                self._display.vvvv("opened debconf fd")
+                self._display.vvvv("opened debconf fds")
         else:
-            self._display.vvvv("debconf callbacks disabled as DEBCONF_REDIR unset")
+            self._display.vvvv(
+                "debconf callbacks disabled: DEBCONF_FRONTEND<>passthrough")
 
         # Might confuse child processes
-        for env in ["DEBCONF_OLD_FD_BASE", "DEBCONF_REDIR", 
-                    "DEBIAN_FRONTEND", "DEBIAN_HAS_FRONTEND"]:
+        for env in ["DEBCONF_OLD_FD_BASE", "DEBCONF_REDIR", "DEBCONF_READFD",
+                    "DEBCONF_WRITEFD", "DEBIAN_FRONTEND",
+                    "DEBIAN_HAS_FRONTEND"]:
             try:
                 del os.environ[env]
             except:
