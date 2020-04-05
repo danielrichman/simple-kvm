@@ -14,16 +14,16 @@ log() {
     logger -t run-ansible "$@"
 }
 
-# Note, this is going to be in-memory, and will consume about 300M
+echo "log ansible-at-exit done" > /ansible-infra/at-exit
+trap 'log ansible-at-exit; . /ansible-infra/at-exit' EXIT
 
-echo "log ansible-at-exit done" > /tmp/ansible-at-exit
-trap 'log ansible-at-exit; . /tmp/ansible-at-exit' EXIT
-
-db_progress START 0 150 run-ansible/progress/preparing-staging
-
-log "mkdir /ansible-staging"
-mkdir /ansible-staging
-sed -i "1irm -rf /ansible-staging" /tmp/ansible-at-exit
+for bindmount in ansible-playbooks ansible-infra; do
+    log "bind-mounting ${bindmount}"
+    mkdir -p /target/${bindmount}
+    sed -i "1irmdir /target/${bindmount}" /ansible-infra/at-exit
+    mount -o bind /${bindmount} /target/${bindmount}
+    sed -i "1iumount /target/${bindmount}" /ansible-infra/at-exit
+done
 
 # The installer doesn't appear to set this up? Python multiprocessing needs it.
 log "mounting /dev/shm"
@@ -32,41 +32,16 @@ if [ ! -d /dev/shm ]; then
     mount -t tmpfs tmpfs /dev/shm
 fi
 
-# Share deb download cache.
-log "bindmounting deb cache"
-ARCHS=/var/cache/apt/archives
-mkdir -p /ansible-staging/${ARCHS}
-mount -o bind /target/${ARCHS} /ansible-staging/${ARCHS}
-sed -i "1iumount /ansible-staging/${ARCHS}" /tmp/ansible-at-exit
-
-log "running debootstrap"
-log-output -t ansible-debootstrap \
-    run-debootstrap \
-        --debian-installer \
-        $(debconf-get mirror/codename) /ansible-staging \
-        http://$(debconf-get mirror/http/hostname)$(debconf-get mirror/http/directory)
-
-for i in ansible-playbooks dev dev/shm proc sys target; do
-    log "bind-mounting ${i}"
-    mkdir -p /ansible-staging/${i}
-    mount -o bind /${i} /ansible-staging/${i}
-    sed -i "1iumount /ansible-staging/${i}" /tmp/ansible-at-exit
-done
-
 log "installing ansible"
 
 db_progress INFO run-ansible/progress/installing-ansible
 # It looks like ansible depends on python3-distutils, but the package doesn't
 # know that, so we have to explicitly install it here.
-chroot /ansible-staging \
+in-target \
   debconf-apt-progress --from 100 --to 150 --logstderr -- \
   apt install ansible python3-distutils --no-install-recommends --yes
 
 db_progress STOP
-
-PLUGINS_DIR=/usr/share/ansible/plugins/callback
-mkdir -p /ansible-staging/${PLUGINS_DIR}
-cp ${PLUGINS_DIR}/debconf.py /ansible-staging/${PLUGINS_DIR}/
 
 if grep ^HOST4= /preseed-settings 2> /dev/null; then
     ( . /preseed-settings
@@ -75,15 +50,17 @@ if grep ^HOST4= /preseed-settings 2> /dev/null; then
         echo "host4=${HOST4}" ) > /target/etc/ansible/facts.d/simple_kvm.fact )
 fi
 
-echo "$(hostname) ansible_connection=chroot ansible_host=/target ansible_python_interpreter=/usr/bin/python3" \
-  > /ansible-staging/etc/ansible/hosts
+echo "$(hostname) ansible_connection=local ansible_python_interpreter=/usr/bin/python3" \
+  > /target/etc/ansible/hosts
 
 log "running playbook"
 
-( export HOME=/root # Ansible puts temporary files in ~/.ansible
-  export ANSIBLE_LOG_PATH=/var/log/ansible.log
-  chroot /ansible-staging ansible-playbook /ansible-playbooks/main.yml \
-      --extra-vars '{"debian_installer": true}' \
+( export ANSIBLE_LOCAL_TMP=/ansible-infra/tmp
+  export ANSIBLE_LOG_PATH=/ansible-infra/ansible.log
+  export ANSIBLE_CALLBACK_PLUGINS=/ansible-infra/callback-plugins
+  in-target \
+      ansible-playbook /ansible-playbooks/main.yml \
+            --extra-vars '{"debian_installer": true}' \
     || ( log "ansible failed"
          db_input critical run-ansible/progress/running-ansible-failed || true
          db_go || true
