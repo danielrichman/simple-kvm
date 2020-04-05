@@ -19,7 +19,7 @@ class CallbackModule(CallbackBase):
 
         super(CallbackModule, self).__init__()
 
-        if os.environ.get("DEBCONF_FRONTEND") == "passthrough":
+        if os.environ.get("DEBIAN_FRONTEND") == "passthrough":
             try:
                 readfd = int(os.environ["DEBCONF_READFD"])
                 self._debconf_in  = os.fdopen(os.dup(readfd), 'r')
@@ -32,7 +32,7 @@ class CallbackModule(CallbackBase):
                 self._display.vvvv("opened debconf fds")
         else:
             self._display.vvvv(
-                "debconf callbacks disabled: DEBCONF_FRONTEND<>passthrough")
+                "debconf callbacks disabled: DEBIAN_FRONTEND<>passthrough")
 
         # Might confuse child processes
         for env in ["DEBCONF_OLD_FD_BASE", "DEBCONF_REDIR", "DEBCONF_READFD",
