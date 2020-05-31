@@ -8,7 +8,7 @@ Description: Installing ansible in target
 
 Template: run-ansible/progress/running-ansible-failed
 Type: text
-Description: Running the ansible playbook failed. See /ansible-staging/var/log/ansible.log
+Description: Running the ansible playbook failed. See /ansible-infra/ansible.log
 
 Template: run-ansible/progress/info/running
 Type: text
