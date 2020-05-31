@@ -42,6 +42,8 @@ iface eth0 inet6 static
     address $IP6
     netmask 128
     post-up /sbin/ip -family inet6 route add default via fe80::1 dev eth0
+
+source-directory /etc/network/interfaces.d
 EOF
 
 rm bin/ethdetect bin/netcfg
