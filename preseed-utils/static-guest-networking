@@ -36,12 +36,12 @@ iface eth0 inet static
     address $IP4
     netmask 255.255.255.255
     post-up /sbin/ip route add $HOST4 dev eth0
-    post-up /sbin/ip route add default via $HOST4
+    post-up /sbin/ip route add default via $HOST4 src $IP4
 
 iface eth0 inet6 static
     address $IP6
     netmask 128
-    post-up /sbin/ip -family inet6 route add default via fe80::1 dev eth0
+    post-up /sbin/ip -family inet6 route add default via fe80::1 dev eth0 src $IP6
 
 source-directory /etc/network/interfaces.d
 EOF
