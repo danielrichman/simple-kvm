@@ -27,6 +27,8 @@ EOF
 echo $HOSTNAME > /etc/hostname
 hostname -F /etc/hostname
 
+# in debian 9 we needed "sleep 10" before adding the v6 default route because
+# we had to wait for DAD. in debian 10 ifupdown does that for you
 cat > /etc/network/interfaces <<EOF
 auto lo
 iface lo inet loopback
