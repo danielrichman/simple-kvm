@@ -35,11 +35,9 @@ fi
 log "installing ansible"
 
 db_progress INFO run-ansible/progress/installing-ansible
-# It looks like ansible depends on python3-distutils, but the package doesn't
-# know that, so we have to explicitly install it here.
 in-target \
   debconf-apt-progress --from 100 --to 150 --logstderr -- \
-  apt install ansible python3-distutils --no-install-recommends --yes
+  apt install ansible --no-install-recommends --yes
 
 db_progress STOP
 
@@ -50,7 +48,7 @@ if grep ^HOST4= /preseed-settings 2> /dev/null; then
         echo "host4=${HOST4}" ) > /target/etc/ansible/facts.d/simple_kvm.fact )
 fi
 
-echo "$(hostname) ansible_connection=local ansible_python_interpreter=/usr/bin/python3" \
+echo "$(hostname) ansible_connection=local ansible_python_interpreter=/usr/bin/python" \
   > /target/etc/ansible/hosts
 
 log "running playbook"
