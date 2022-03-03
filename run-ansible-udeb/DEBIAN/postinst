@@ -58,6 +58,7 @@ log "running playbook"
 ( export ANSIBLE_LOCAL_TEMP=/ansible-infra/tmp
   export ANSIBLE_LOG_PATH=/ansible-infra/ansible.log
   export ANSIBLE_CALLBACK_PLUGINS=/ansible-infra/callback-plugins
+  export HOME=/root
   in-target \
       ansible-playbook /ansible-playbooks/main.yml \
             --extra-vars '{"debian_installer": true}' \
