@@ -43,9 +43,10 @@ in-target \
 
 db_progress STOP
 
+mkdir -p /target/etc/ansible /target/etc/ansible/facts.d
+
 if grep ^HOST4= /preseed-settings 2> /dev/null; then
     ( . /preseed-settings
-      mkdir -p /target/etc/ansible/facts.d
       ( echo "[networking]"
         echo "host4=${HOST4}" ) > /target/etc/ansible/facts.d/simple_kvm.fact )
 fi
