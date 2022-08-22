@@ -231,7 +231,7 @@ def exec_kvm(guest_name, disk_fds, tap_fd, boot_spec):
         , "-m", str(guest["ram_mbs"])
         , "-mem-path", hugepages_folder(guest_name)
         , "-mem-prealloc"
-        , "-realtime", "mlock=on"
+        , "-overcommit", "mem-lock=on"
         , "-smp", "{0},sockets={0},cores=1,threads=1".format(guest["cpus"])
         , "-name", guest_name
         , "-nographic"        # don't try to open a gui
@@ -244,11 +244,11 @@ def exec_kvm(guest_name, disk_fds, tap_fd, boot_spec):
         ]
 
     for idx, disk_fd in enumerate(disk_fds):
-        fdset_id = 100 + idx  # I don't understand what a 'fdset' is
-        bus_index = 1 + idx
+        fdset_id = 100 + idx
         args += \
             [ "-add-fd", "fd={},set={}".format(disk_fd, fdset_id)
-            , "-drive", "file=/dev/fdset/{},cache=none,if=virtio,index={},format=raw".format(fdset_id, bus_index)
+            , "-blockdev", "node-name=disk-{},driver=raw,file.driver=host_device,file.filename=/dev/fdset/{}".format(idx, fdset_id)
+            , "-device", "virtio-blk,drive=disk-{}".format(idx)
             ]
 
     args += \
