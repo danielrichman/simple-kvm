@@ -5,6 +5,17 @@ A single file dumb script to run KVM guests. It doesn't require a daemon, is
 quite aggressive about dropping privileges, and helps with my odd networking
 requirements.
 
+To install
+----------
+
+As root,
+
+ - `apt install qemu-kvm`
+ - `git clone https://github.com/danielrichman/simple-kvm /usr/local/lib/simple-kvm`
+ - `ln -s /usr/local/lib/simple-kvm/guest-manager /target/usr/local/bin`
+ - `ln -s /usr/local/lib/simple-kvm/random-mac    /target/usr/local/bin`
+ - `cp /usr/local/lib/simple-kvm/simple-kvm\@.service /etc/systemd/system/simple-kvm\@.service`
+
 To create a new guest
 ---------------------
 
@@ -26,10 +37,8 @@ To create a new guest
  - `vim /etc/guests.json`: change the kernel, initrd to their final values
     - to direct boot the kernel from the host, use `/vmlinuz` `/initrd.img` `console=ttyS0,115200n8 root=/dev/vda`
     - to use grub omit the three options (and change the preseed to install grub)
- - `cp /usr/local/lib/simple-kvm/guest-example.service /etc/systemd/system/guest-daniel-yocto.service`
- - `vim /etc/systemd/system/guest-daniel-yocto.service` and find-replace the name
- - `systemctl enable guest-daniel-yocto.service`
- - `systemctl start guest-daniel-yocto.service`
+ - `systemctl enable simple-kvm@daniel-yocto.service`
+ - `systemctl start simpke-kvm@daniel-yocto.service`
 
 Todo
 ----

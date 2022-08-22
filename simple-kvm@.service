@@ -1,10 +1,10 @@
 [Unit]
-Description=Guest: daniel-yocto
+Description=simple-kvm guest %i
 After=network.target
 
 [Service]
-ExecStart=/usr/local/bin/guest-manager daniel-yocto boot
-ExecStop=/usr/local/bin/guest-manager daniel-yocto acpi-shutdown
+ExecStart=/usr/local/bin/guest-manager %i boot
+ExecStop=/usr/local/bin/guest-manager %i acpi-shutdown
 KillMode=none
 # You may prefer Restart=no.
 StartLimitInterval=1800s
