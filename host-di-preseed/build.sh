@@ -7,7 +7,7 @@ for type in rsa dsa ecdsa; do
     ssh-keygen -l -f extra/etc/ssh/ssh_host_${type}_key
 done
 
-INSTALLER=/usr/lib/debian-installer/images/10/amd64/text/debian-installer/amd64
+INSTALLER=/usr/lib/debian-installer/images/11/amd64/text/debian-installer/amd64
 
 cp $INSTALLER/linux .
 cat \

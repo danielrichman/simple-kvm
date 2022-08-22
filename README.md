@@ -9,8 +9,8 @@ To create a new guest
 ---------------------
 
  - `vim /etc/guests.json`: add the VM, but set
-    - kernel: `/usr/lib/debian-installer/images/10/amd64/text/debian-installer/amd64/linux`
-    - initrd: `[ "/usr/lib/debian-installer/images/10/amd64/text/debian-installer/amd64/initrd.gz", "/usr/local/lib/simple-kvm/guest-di-preseed/extra/" ]`
+    - kernel: `/usr/lib/debian-installer/images/11/amd64/text/debian-installer/amd64/linux`
+    - initrd: `[ "/usr/lib/debian-installer/images/11/amd64/text/debian-installer/amd64/initrd.gz", "/usr/local/lib/simple-kvm/guest-di-preseed/extra/" ]`
     - append: `console=ttyS0,115200n8`
  - `adduser --system --group guest-daniel-yocto --shell /bin/false`
  - `lvcreate vg0 --name daniel-yocto --size 8G`
