@@ -12,8 +12,8 @@ As root,
 
  - `apt install qemu-kvm`
  - `git clone https://github.com/danielrichman/simple-kvm /usr/local/lib/simple-kvm`
- - `ln -s /usr/local/lib/simple-kvm/guest-manager /target/usr/local/bin`
- - `ln -s /usr/local/lib/simple-kvm/random-mac    /target/usr/local/bin`
+ - `ln -s /usr/local/lib/simple-kvm/guest-manager /usr/local/bin`
+ - `ln -s /usr/local/lib/simple-kvm/random-mac    /usr/local/bin`
  - `cp /usr/local/lib/simple-kvm/simple-kvm\@.service /etc/systemd/system/simple-kvm\@.service`
 
 To create a new guest
