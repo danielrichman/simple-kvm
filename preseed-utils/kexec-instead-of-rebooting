@@ -12,9 +12,19 @@ in-target kexec -l /vmlinuz --initrd=/initrd.img \
 
 # We used to use `anna-install kexec-tools-udeb` and `kexec -e` below, however
 # the udeb is borked: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1138292
+# Fortunately we have gcc in /target :vomit:
 
-cat > /lib/debian-installer/exit <<EOF
-#!/bin/sh
-sync
-python3 -c "import ctypes; ctypes.CDLL(None).reboot(0x45584543)"
+cat > /target/tmp/kexec-e.c <<EOF
+#include <unistd.h>
+#include <sys/reboot.h>
+#include <linux/reboot.h>
+
+int main(int argc, char **argv) {
+    sync();
+    reboot(LINUX_REBOOT_CMD_KEXEC);
+    return 1;
+}
 EOF
+
+in-target gcc -o /tmp/kexec-e /tmp/kexec-e.c
+cp /target/tmp/kexec-e /lib/debian-installer/exit
