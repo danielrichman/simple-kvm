@@ -6,20 +6,15 @@
 
 set -o errexit -o nounset
 
-anna-install kexec-tools-udeb
+in-target apt install --yes --no-install-recommends kexec-tools
+in-target kexec -l /vmlinuz --initrd=/initrd.img \
+     --append="console=ttyS0,115200n8 net.ifnames=0 root=/dev/vda"
 
-# At the time of writing, you get this in /target:
-#   initrd.img -> /boot/initrd.img-3.16.0-4-amd64
-# so we need this hack to interpret the symlinks relative to the chroot.
-
-in-target cp --dereference /vmlinuz /initrd.img /tmp
-
-kexec -l /target/tmp/vmlinuz --initrd=/target/tmp/initrd.img \
-    --append="console=ttyS0,115200n8 net.ifnames=0 root=/dev/vda"
-
-rm /target/tmp/vmlinuz /target/tmp/initrd.img
+# We used to use `anna-install kexec-tools-udeb` and `kexec -e` below, however
+# the udeb is borked: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1138292
 
 cat > /lib/debian-installer/exit <<EOF
 #!/bin/sh
-kexec -e
+sync
+python3 -c "import ctypes; ctypes.CDLL(None).reboot(0x45584543)"
 EOF
