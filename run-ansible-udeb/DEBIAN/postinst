@@ -69,6 +69,8 @@ exit_if_subshell_returned_nonzero
 
 log "done running playbook"
 
-# ansible seems to often end up incidentally starting gpg-agent, preventing
-# clean unmounts at the end of installation. Kill it.
-HOME=/root in-target gpgconf --kill gpg-agent
+if test -f /target/usr/bin/gpgconf; then
+    # ansible seems to often end up incidentally starting gpg-agent, preventing
+    # clean unmounts at the end of installation. Kill it.
+    HOME=/root in-target gpgconf --kill gpg-agent
+fi
