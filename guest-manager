@@ -226,7 +226,7 @@ def exec_kvm(guest_name, disk_fds, tap_fd, boot_spec):
     args = \
         [ "qemu-KVM:{}".format(guest_name)
         , "-cpu", "host"
-        , "-M", "pc35" # emulated machine type
+        , "-M", "q35" # emulated machine type
         , "-enable-kvm"
         , "-m", str(guest["ram_mbs"])
         , "-mem-path", hugepages_folder(guest_name)
